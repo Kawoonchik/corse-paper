@@ -1,11 +1,10 @@
 #include <iostream>
 #include <string>
-#include <limits> // Для очищення буфера вводу
+#include <limits>
 #define NOMINMAX
-#include <windows.h> // Для налаштування кодування (SetConsoleOutputCP)
+#include <windows.h> 
 
-// --- ПІДКЛЮЧЕННЯ ЯДРА ---
-// Шляхи прописані на основі твоєї структури папок
+
 #include "core/Library/LibraryManager.h"
 #include "core/Document/PrintedDocument.h"
 #include "core/Document/ElectronicDocument.h"
@@ -13,13 +12,12 @@
 using namespace std;
 using namespace LibraryCore;
 
-// Функція для очищення потоку (якщо ввели букви замість цифр)
 void ClearInput() {
     cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// Функція відображення меню
+
 void ShowMenu(bool isAdmin) {
     cout << "\n========================================" << endl;
     cout << "   СИСТЕМА УПРАВЛІННЯ БІБЛІОТЕКОЮ" << endl;
@@ -41,16 +39,15 @@ void ShowMenu(bool isAdmin) {
     cout << "12. Список усіх студентів" << endl;
     cout << "13. Список усіх документів" << endl;
 
+    cout << "14. Допомога (Інструкція)" << endl;
+
     if (isAdmin) {
         cout << "----------------------------------------" << endl;
         cout << "--- ПАНЕЛЬ АДМІНІСТРАТОРА ---" << endl;
-        cout << "14. Зареєструвати нового користувача" << endl;
-        cout << "15. Видалити користувача" << endl;
-        cout << "16. Список користувачів системи" << endl;
+        cout << "15. Зареєструвати нового користувача" << endl;
+        cout << "16. Видалити користувача" << endl;
+        cout << "17. Список користувачів системи" << endl;
     }
-    cout << "----------------------------------------" << endl;
-    cout << "17. Допомога (Інструкція)" << endl;
-    cout << "----------------------------------------" << endl;
 
     cout << "----------------------------------------" << endl;
     cout << "0. Вихід" << endl;
@@ -93,17 +90,16 @@ void ShowHelp() {
 }
 
 int main() {
-    // 1. Налаштування української мови
+    // Налаштування української мови
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
-    // 2. Ініціалізація системи
     LibraryManager app;
 
     string username, password;
     bool loggedIn = false;
 
-    // === ЕТАП 1: АВТОРИЗАЦІЯ ===
+	// Авторизація користувача
     while (!loggedIn) {
         cout << "\n--- ВХІД У СИСТЕМУ ---" << endl;
         cout << "(За замовчуванням: admin / admin123)" << endl;
@@ -121,7 +117,7 @@ int main() {
         }
     }
 
-    // === ЕТАП 2: ГОЛОВНЕ МЕНЮ ===
+	// Головне меню
     int choice;
     while (true) {
         bool isAdmin = false;
@@ -152,6 +148,7 @@ int main() {
             for (auto* doc : results) doc->DisplayInfo();
             break;
         }
+
         case 2: { // Видача
             string cardId;
             int docId;
@@ -160,6 +157,7 @@ int main() {
             app.CheckoutBook(cardId, docId);
             break;
         }
+
         case 3: { // Повернення
             string cardId;
             int docId;
@@ -168,6 +166,7 @@ int main() {
             app.ReturnBook(cardId, docId);
             break;
         }
+
         case 4: // Боржники
             app.DisplayDebtorList();
             break;
@@ -186,6 +185,7 @@ int main() {
             app.AddStudent(s);
             break;
         }
+
         case 6: { // Додавання документа
             int typeChoice;
             cout << "Тип? (1 - Друкований, 2 - Електронний): ";
@@ -213,6 +213,7 @@ int main() {
             }
             break;
         }
+
         case 7: { // Видалення документа
             int id;
             cout << "ID документа для видалення: "; cin >> id;
@@ -224,7 +225,6 @@ int main() {
             string targetId;
             cout << "Введіть ID картки студента, якого редагуємо: "; cin >> targetId;
 
-            // Збираємо нові дані
             string lName, fName, recBook, group;
             int course;
             cout << "--- Введіть НОВІ дані ---" << endl;
@@ -234,17 +234,16 @@ int main() {
             cout << "Курс: "; cin >> course;
             cout << "Група: "; cin >> group;
 
-            // Створюємо об'єкт з новими даними (ID залишаємо той самий, щоб не ламати зв'язки)
             Student updatedS(lName, fName, recBook, course, group, targetId);
 
             app.EditStudent(targetId, updatedS);
             break;
         }
+
         case 9: { // Редагування документа
             int targetId;
             cout << "Введіть ID документа для зміни: "; cin >> targetId;
 
-            // Збираємо нові базові дані
             string title, author;
             int year;
             cout << "--- Введіть НОВІ дані ---" << endl;
@@ -252,15 +251,16 @@ int main() {
             cout << "Автор: "; getline(cin, author);
             cout << "Рік: "; cin >> year;
 
-            // Створюємо тимчасовий об'єкт, щоб передати дані (тип тут не важливий, бо ми міняємо тільки спільні поля)
             PrintedDocument tempDoc(targetId, title, author, year, 0, "");
             app.EditDocument(targetId, tempDoc);
             break;
         }
+
         case 10: { // Сортування
-            app.SortDocumentsByTitle(); // Метод вже має cout всередині
+            app.SortDocumentsByTitle();
             break;
         }
+
         case 11: { // Фільтрація
             int fType;
             cout << "Показати: 1-Друковані, 2-Електронні: "; cin >> fType;
@@ -273,17 +273,19 @@ int main() {
             break;
         }
 
-               // --------------------
-
         case 12: // Список студентів
             app.DisplayStudents();
             break;
+
         case 13: // Список документів
             app.DisplayDocuments();
             break;
 
-            // --- Функції Адміністратора ---
-        case 14: {
+		case 14: // Допомога
+            ShowHelp();
+            break;
+
+        case 15: {// Функції Адміністратора
             if (!isAdmin) { cout << "Доступ заборонено.\n"; break; }
             string uName, uPass;
             bool adminFlag;
@@ -293,22 +295,20 @@ int main() {
             app.RegisterUser(uName, uPass, adminFlag);
             break;
         }
-        case 15: {
+
+        case 16: {
             if (!isAdmin) { cout << "Доступ заборонено.\n"; break; }
             string uName;
             cout << "Логін для видалення: "; cin >> uName;
             app.DeleteUser(uName);
             break;
         }
-        case 16: {
+
+        case 17: {
             if (!isAdmin) { cout << "Доступ заборонено.\n"; break; }
             app.DisplayUserList();
             break;
         }
-
-        case 17:
-            ShowHelp();
-            break;
 
         default:
             cout << "Невірний вибір." << endl;

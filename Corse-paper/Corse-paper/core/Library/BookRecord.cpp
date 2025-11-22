@@ -9,9 +9,6 @@ using std::stringstream;
 
 namespace LibraryCore
 {
-    // Допоміжна функція (вона потрібна тут локально для парсингу)
-    // Щоб не дублювати код, в ідеалі її виносять в Utils, 
-    // але поки нехай буде тут, щоб все працювало.
     static vector<string> SplitCsvLineRecord(const string& line, char delimiter = ';')
     {
         vector<string> tokens;

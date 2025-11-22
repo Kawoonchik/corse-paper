@@ -1,18 +1,29 @@
 #pragma once
 #include <string>
-#include <ctime> // Для std::time_t
+#include <ctime>
 
 namespace LibraryCore
 {
+    /**
+     * @struct BookRecord
+     * @brief Структура для обліку видачі книг.
+     * * Зв'язує ID документа з читацьким квитком студента та фіксує дати.
+     */
     struct BookRecord
     {
-        int documentId;           // ID книги
-        std::string readerCardId; // ID студента
-        std::time_t issueDate;    // Дата видачі
-        std::time_t dueDate;      // Дата повернення
+        int documentId = 0;           /** ID виданого документа */
+        std::string readerCardId;     /** Номер читацького квитка студента */
+        std::time_t issueDate = 0;    /** Дата видачі */
+        std::time_t dueDate = 0;      /** Дата, до якої треба повернути */
 
-        // Методи для запису у файл
+        /**
+         * @brief Формує рядок CSV для збереження транзакції.
+         */
         std::string ToCsv() const;
+
+        /**
+         * @brief Зчитує дані транзакції з рядка CSV.
+         */
         void FromCsv(const std::string& line);
     };
 }

@@ -5,7 +5,12 @@
 
 namespace LibraryCore
 {
-    /// @brief Клас студента-читача. Зберігає персональні дані та CSV-логіку
+    /**
+    * @class Student
+    * @brief Клас студента-читача.
+    * * Зберігає персональні дані студента, інформацію про курс та групу,
+    * а також реалізує логіку серіалізації у формат CSV.
+    */
     class Student
     {
     private:
@@ -17,10 +22,20 @@ namespace LibraryCore
         std::string readerCardId;
 
     public:
-        /// @brief Конструктор за замовчуванням.
+        /**
+        * @brief Конструктор за замовчуванням.
+        */
         Student();
 
-        /// @brief Конструктор з повним набором даних.
+         /**
+         * @brief Конструктор з повним набором даних.
+         * @param lName Прізвище.
+         * @param fName Ім'я.
+         * @param recBook Номер залікової книжки.
+         * @param crs Курс (1-6).
+         * @param grp Група.
+         * @param cardId Номер читацького квитка (унікальний ID).
+         */
         Student(
             const std::string& lName,
             const std::string& fName,
@@ -30,13 +45,23 @@ namespace LibraryCore
             const std::string& cardId
         );
 
-        /// @brief Деструктор.
+         /**
+         * @brief Деструктор класу.
+         */
         ~Student();
 
         // Копіювання та переміщення
+
+        /** @brief Конструктор копіювання. */
         Student(const Student& other);
+
+        /** @brief Оператор присвоєння копіюванням. */
         Student& operator=(const Student& other);
+
+        /** @brief Конструктор переміщення. */
         Student(Student&& other) noexcept;
+
+        /** @brief Оператор присвоєння переміщенням. */
         Student& operator=(Student&& other) noexcept;
 
         // Get/Set методи
@@ -60,13 +85,20 @@ namespace LibraryCore
 
         // Основні методи 
  
-        /// @brief Повертає повне ім'я (Прізвище + Ім'я)
+         /**
+         * @brief Повертає повне ім'я студента.
+         * @return Рядок у форматі "Прізвище Ім'я".
+         */
         std::string GetFullName() const;
 
-        /// @brief Виводить інформацію в консоль.
+         /**
+         * @brief Виводить детальну інформацію про студента в консоль.
+         */
         void DisplayInfo() const;
 
-        /// @brief Переводить студента на наступний курс.
+         /**
+         * @brief Переводить студента на наступний курс (якщо курс < 6).
+         */
         void IncrementCourse();
 
         /**
@@ -75,7 +107,10 @@ namespace LibraryCore
          */
         std::string ToCsv() const;
 
-        /// @brief Заповнює об'єкт з CSV рядка.
+         /**
+         * @brief Заповнює поля об'єкта даними з CSV рядка.
+         * @param line Вхідний рядок з файлу.
+         */
         void FromCsv(const std::string& line);
     };
 }

@@ -134,7 +134,7 @@ namespace LibraryCore
         if (course < 6) course++;
     }
 
-    // --- CSV логіка ---
+    // CSV логіка 
 
     string Student::ToCsv() const
     {

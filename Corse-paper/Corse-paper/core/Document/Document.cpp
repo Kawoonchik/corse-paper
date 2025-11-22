@@ -9,13 +9,19 @@ namespace LibraryCore
 {
     Document::Document() : id(0), year(0) {}
 
-    Document::Document(int id, const string& t, const string& a, int y)
-        : id(id), title(t), author(a), year(y) {
+    Document::Document(
+        int id,
+        const string& t,
+        const string& a,
+        int y
+    )
+        : id(id), title(t), author(a), year(y)
+    {
     }
 
     Document::~Document() {}
 
-    // 1. Копіювання
+    // Копіювання
     Document::Document(const Document& other)
         : id(other.id), title(other.title), author(other.author), year(other.year)
     {
@@ -31,7 +37,7 @@ namespace LibraryCore
         return *this;
     }
 
-    // 2. Переміщення
+    // Переміщення
     Document::Document(Document&& other) noexcept
         : id(other.id)
         , title(std::move(other.title))
@@ -52,14 +58,13 @@ namespace LibraryCore
         author = std::move(other.author);
         year = other.year;
 
-        // "Зануляємо" старий об'єкт
         other.id = 0;
         other.year = 0;
 
         return *this;
     }
         
-
+	// Get/Set методи 
     void Document::SetId(int val) { id = val; }
     int Document::GetId() const { return id; }
 

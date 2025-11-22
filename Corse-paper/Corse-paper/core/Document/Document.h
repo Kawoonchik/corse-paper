@@ -3,6 +3,8 @@
 #include <vector>
 #include <iostream>
 
+#include "../utils/ISerializable.h"
+
 namespace LibraryCore
 {
      /**

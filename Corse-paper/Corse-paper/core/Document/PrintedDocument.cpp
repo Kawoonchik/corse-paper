@@ -1,5 +1,3 @@
-// Реалізація класу PrintedDocument.
-// Містить логіку для друкованих документів, включаючи CSV-серіалізацію специфічних полів.
 #include "PrintedDocument.h"
 #include <iostream> 
 #include <utility> 
@@ -10,15 +8,23 @@ namespace LibraryCore
 {
     PrintedDocument::PrintedDocument() : Document(), pageCount(0) {}
 
-    PrintedDocument::PrintedDocument(int id, const string& t, const string& a, int y, int p, const string& m)
-        : Document(id, t, a, y), pageCount(p), medium(m) {
+    PrintedDocument::PrintedDocument(
+        int id,
+        const string& t,
+        const string& a,
+        int y,
+        int p,
+        const string& m
+    )
+        : Document(id, t, a, y), pageCount(p), medium(m)
+    {
     }
 
     PrintedDocument::~PrintedDocument() {}
 
-    // 1. Копіювання
+	// Копіювання та переміщення
     PrintedDocument::PrintedDocument(const PrintedDocument& other)
-        : Document(other) // Копіюємо базову частину
+        : Document(other) 
         , pageCount(other.pageCount)
         , medium(other.medium)
     {
@@ -28,16 +34,15 @@ namespace LibraryCore
     {
         if (this == &other) return *this;
 
-        Document::operator=(other); // Присвоюємо базову частину
+        Document::operator=(other); 
         pageCount = other.pageCount;
         medium = other.medium;
 
         return *this;
     }
 
-    // 2. Переміщення
     PrintedDocument::PrintedDocument(PrintedDocument&& other) noexcept
-        : Document(std::move(other)) // Переміщуємо базову частину
+        : Document(std::move(other)) 
         , pageCount(other.pageCount)
         , medium(std::move(other.medium))
     {
@@ -48,7 +53,7 @@ namespace LibraryCore
     {
         if (this == &other) return *this;
 
-        Document::operator=(std::move(other)); // Переміщуємо базову частину
+        Document::operator=(std::move(other)); 
         pageCount = other.pageCount;
         medium = std::move(other.medium);
 
@@ -56,6 +61,7 @@ namespace LibraryCore
         return *this;
     }
 
+	// Get/Set методи
     void PrintedDocument::SetPageCount(int c) { pageCount = c; }
     int PrintedDocument::GetPageCount() const { return pageCount; }
 
@@ -82,10 +88,9 @@ namespace LibraryCore
 
     void PrintedDocument::FromCsv(const std::string& line)
     {
-        Document::FromCsv(line); // Зчитуємо базу
+        Document::FromCsv(line); 
 
         auto tokens = this->SplitCsvLine(line);
-        // Специфічні поля знаходяться на індексах 4 і 5
         if (tokens.size() >= 6)
         {
             try { pageCount = std::stoi(tokens[4]); }
