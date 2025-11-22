@@ -3,20 +3,21 @@
 
 namespace LibraryCore
 {
-    /**
+     /**
      * @class ElectronicDocument
-     * @brief Представляє електронну версію документа (файл).
-     *
-     * Наслідує Document, додаючи специфічні поля: fileFormat та fileSizeMB.
+     * @brief Клас для електронних файлів.
+     * * Нащадок класу Document. Додає поля для формату файлу та його розміру.
      */
     class ElectronicDocument : public Document
     {
     private:
-        std::string fileFormat; // PDF, EPUB, DOC
-        double fileSizeMB;      // Розмір файлу в мегабайтах
+        std::string fileFormat;
+        double fileSizeMB; 
 
     public:
-        /** @brief Конструктор за замовчуванням. */
+            /**
+         * @brief Конструктор за замовчуванням.
+         */
         ElectronicDocument();
 
         /**
@@ -31,30 +32,58 @@ namespace LibraryCore
         ElectronicDocument(int id, const std::string& title, const std::string& author, int year,
             const std::string& format, double size);
 
+        /**
+         * @brief Деструктор.
+         */
         virtual ~ElectronicDocument();
 
-        ElectronicDocument(const ElectronicDocument& other);            // Копіювання
-        ElectronicDocument& operator=(const ElectronicDocument& other); // Присвоєння копії
-        ElectronicDocument(ElectronicDocument&& other) noexcept;        // Переміщення
-        ElectronicDocument& operator=(ElectronicDocument&& other) noexcept; // Присвоєння переміщення
+        // Копіювання та переміщення
 
-        // Get/Set
-        /** @brief Встановлює формат файлу. @param format - Новий формат файлу. */
+        /** @brief Конструктор копіювання. */
+        ElectronicDocument(const ElectronicDocument& other);
+
+        /** @brief Оператор присвоєння копіюванням. */
+        ElectronicDocument& operator=(const ElectronicDocument& other);
+
+        /** @brief Конструктор переміщення. */
+        ElectronicDocument(ElectronicDocument&& other) noexcept;
+
+        /** @brief Оператор присвоєння переміщенням. */
+        ElectronicDocument& operator=(ElectronicDocument&& other) noexcept;
+
+        // Get/Set методи
+
         void SetFileFormat(const std::string& format);
-        /** @brief Повертає формат файлу. @return Формат файлу. */
         std::string GetFileFormat() const;
 
-        /** @brief Встановлює розмір файлу. @param size - Розмір файлу у МБ. */
         void SetFileSizeMB(double size);
-        /** @brief Повертає розмір файлу. @return Розмір файлу у МБ. */
         double GetFileSizeMB() const;
 
         // Перевизначені методи
+
+        /**
+         * @brief Повертає тип "Electronic".
+         */
         std::string GetType() const override;
+
+        /**
+         * @brief Повертає рядок "Формат, X MB".
+         */
         std::string GetDetails() const override;
+
+        /**
+         * @brief Виводить інформацію про електронний файл.
+         */
         void DisplayInfo() const override;
 
+        /**
+         * @brief Додає специфічні поля до CSV рядка.
+         */
         std::string ToCsv() const override;
+
+        /**
+         * @brief Зчитує специфічні поля з CSV рядка.
+         */
         void FromCsv(const std::string& line) override;
     };
 }

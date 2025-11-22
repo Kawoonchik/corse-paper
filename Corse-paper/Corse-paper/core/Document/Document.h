@@ -5,12 +5,11 @@
 
 namespace LibraryCore
 {
-    /**
+     /**
      * @class Document
-     * @brief Абстрактний базовий клас для всіх матеріалів бібліотеки.
-     *
-     * Містить спільні поля (ID, назва, автор, рік) та віртуальний інтерфейс
-     * для реалізації поліморфізму (GetType, ToCsv, FromCsv).
+     * @brief Абстрактний базовий клас документа.
+     * * Визначає спільний інтерфейс для всіх типів документів (друкованих та електронних).
+     * Реалізує поліморфізм та базову логіку роботи з CSV.
      */
     class Document
     {
@@ -37,75 +36,69 @@ namespace LibraryCore
 
         /**
          * @brief Віртуальний деструктор.
-         * Обов'язковий для коректного видалення об'єктів-нащадків через вказівник на базовий клас.
+         * Необхідний для коректного видалення об'єктів-нащадків.
          */
         virtual ~Document();
 
-        // --- ДОДАНО: Rule of 5 (Вимога 2.3) ---
+        // Копіювання та переміщення
 
-        // Конструктор копіювання
+        /** @brief Конструктор копіювання. */
         Document(const Document& other);
-        // Оператор присвоювання копіюванням
+
+        /** @brief Оператор присвоєння копіюванням. */
         Document& operator=(const Document& other);
 
-        // Конструктор переміщення
+        /** @brief Конструктор переміщення. */
         Document(Document&& other) noexcept;
-        // Оператор присвоювання переміщенням
+
+        /** @brief Оператор присвоєння переміщенням. */
         Document& operator=(Document&& other) noexcept;
-        // --------------------------------------
         
 
-        // --- Getters / Setters ---
-        /** @brief Встановлює унікальний ідентифікатор документа. @param id - Нове значення ID. */
+        // Get / Set методи
         void SetId(int id);
-        /** @brief Повертає унікальний ідентифікатор документа. @return ID документа. */
         int GetId() const;
 
-        /** @brief Встановлює назву документа. @param title - Нова назва. */
         void SetTitle(const std::string& title);
-        /** @brief Повертає назву документа. @return Назва документа. */
         std::string GetTitle() const;
 
-        /** @brief Встановлює автора документа. @param author - Новий автор. */
         void SetAuthor(const std::string& author);
-        /** @brief Повертає автора документа. @return Автор документа. */
         std::string GetAuthor() const;
 
-        /** @brief Встановлює рік видання. @param year - Новий рік видання. */
         void SetYear(int year);
-        /** @brief Повертає рік видання. @return Рік видання. */
         int GetYear() const;
 
-        // --- Віртуальні методи (Interface) ---
+        // Віртуальні методи (Interface)
 
         /**
-         * @brief Повертає тип документа у вигляді рядка (наприклад, "Printed" або "Electronic").
-         * @return Рядок, що ідентифікує тип.
+         * @brief Повертає тип документа.
+         * @return Рядок "Printed" або "Electronic".
          */
         virtual std::string GetType() const = 0;
 
-        /**
-         * @brief Повертає деталі специфічних полів у вигляді форматованого рядка.
-         * @return Деталі документа.
+         /**
+         * @brief Повертає специфічні деталі документа.
+         * @return Рядок з інформацією про сторінки або розмір файлу.
          */
         virtual std::string GetDetails() const = 0;
 
-        /**
+         /**
          * @brief Виводить повну інформацію про документ у консоль.
+         * Це віртуальний метод, який може бути розширений у нащадках.
          */
         virtual void DisplayInfo() const;
 
-        // --- CSV методи ---
+        // CSV методи 
 
-        /**
-         * @brief Формує CSV рядок, що містить базові поля документа.
-         * @return Рядок у форматі ID;Title;Author;Year;...
+         /**
+         * @brief Формує базову частину CSV рядка.
+         * @return Рядок "ID;Title;Author;Year".
          */
         virtual std::string ToCsv() const;
 
-        /**
-         * @brief Парсить CSV рядок і заповнює базові поля об'єкта.
-         * @param line - Вхідний рядок CSV для парсингу.
+         /**
+         * @brief Зчитує базові поля з CSV рядка.
+         * @param line Вхідний рядок.
          */
         virtual void FromCsv(const std::string& line);
 

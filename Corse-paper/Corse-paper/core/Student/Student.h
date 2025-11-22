@@ -1,16 +1,11 @@
-#pragma once // Заміна ifndef/define для сучасності, працює всюди
+#pragma once
 
 #include <string>
 #include <iostream>
 
 namespace LibraryCore
 {
-    /**
-     * @class Student
-     * @brief Клас для зберігання та управління даними про студента.
-     * * Реалізовано на стандартному C++ для консольного додатку.
-     * Формат збереження даних: CSV.
-     */
+    /// @brief Клас студента-читача. Зберігає персональні дані та CSV-логіку
     class Student
     {
     private:
@@ -22,12 +17,10 @@ namespace LibraryCore
         std::string readerCardId;
 
     public:
-        // --- 1. Конструктори та деструктор (Вимога 2.3) ---
-
-        // Конструктор за замовчуванням
+        /// @brief Конструктор за замовчуванням.
         Student();
 
-        // Конструктор з параметрами
+        /// @brief Конструктор з повним набором даних.
         Student(
             const std::string& lName,
             const std::string& fName,
@@ -37,23 +30,16 @@ namespace LibraryCore
             const std::string& cardId
         );
 
-        // Деструктор (віртуальний не обов'язково, бо від Student не спадкуємось, але з повідомленням)
+        /// @brief Деструктор.
         ~Student();
 
-        // Конструктор копіювання
+        // Копіювання та переміщення
         Student(const Student& other);
-
-        // Оператор присвоювання копіюванням
         Student& operator=(const Student& other);
-
-        // Конструктор переміщення
         Student(Student&& other) noexcept;
-
-        // Оператор присвоювання переміщенням
         Student& operator=(Student&& other) noexcept;
 
-        // --- 2. Get/Set методи (Вимога 2.3) ---
-
+        // Get/Set методи
         void SetLastName(const std::string& lastName);
         std::string GetLastName() const;
 
@@ -72,32 +58,24 @@ namespace LibraryCore
         void SetReaderCardId(const std::string& readerCardId);
         std::string GetReaderCardId() const;
 
-        // --- 3. Власні методи (Вимога 2.3) ---
-
-        /**
-         * @brief Повертає повне ім'я (Прізвище + Ім'я).
-         */
+        // Основні методи 
+ 
+        /// @brief Повертає повне ім'я (Прізвище + Ім'я)
         std::string GetFullName() const;
 
-        /**
-         * @brief Виводить форматовану інформацію в cout.
-         */
+        /// @brief Виводить інформацію в консоль.
         void DisplayInfo() const;
 
-        /**
-         * @brief Збільшує курс на 1 (макс 6).
-         */
+        /// @brief Переводить студента на наступний курс.
         void IncrementCourse();
 
         /**
          * @brief Формує рядок CSV для запису у файл.
-         * @param delimiter Розділювач (за замовчуванням ';', бо коми можуть бути в тексті).
+         * @param delimiter Розділювач (за замовчуванням ';').
          */
         std::string ToCsv() const;
 
-        /**
-         * @brief Парсить рядок CSV і заповнює поля об'єкта.
-         */
+        /// @brief Заповнює об'єкт з CSV рядка.
         void FromCsv(const std::string& line);
     };
 }

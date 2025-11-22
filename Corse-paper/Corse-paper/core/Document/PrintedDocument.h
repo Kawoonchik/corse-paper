@@ -3,20 +3,21 @@
 
 namespace LibraryCore
 {
-    /**
+     /**
      * @class PrintedDocument
-     * @brief Представляє фізичну друковану книгу або інший друкований матеріал.
-     *
-     * Наслідує Document, додаючи специфічні поля: pageCount та medium.
+     * @brief Клас для друкованих книг.
+     * * Нащадок класу Document. Додає поля для кількості сторінок та типу палітурки.
      */
     class PrintedDocument : public Document
     {
     private:
         int pageCount;
-        std::string medium; // Палітурка, журнал тощо
+        std::string medium; // Палітурка
 
     public:
-        /** @brief Конструктор за замовчуванням. */
+         /**
+         * @brief Конструктор за замовчуванням.
+         */
         PrintedDocument();
 
         /**
@@ -31,30 +32,58 @@ namespace LibraryCore
         PrintedDocument(int id, const std::string& title, const std::string& author, int year,
             int pageCount, const std::string& medium);
 
+        /**
+         * @brief Деструктор.
+         */
         virtual ~PrintedDocument();
 
-        PrintedDocument(const PrintedDocument& other);            // Копіювання
-        PrintedDocument& operator=(const PrintedDocument& other); // Присвоєння копії
-        PrintedDocument(PrintedDocument&& other) noexcept;        // Переміщення
-        PrintedDocument& operator=(PrintedDocument&& other) noexcept; // Присвоєння переміщення
+        // Копіювання та переміщення
 
-        // Get/Set
-        /** @brief Встановлює кількість сторінок. @param count - Кількість сторінок. */
+        /** @brief Конструктор копіювання. */
+        PrintedDocument(const PrintedDocument& other);
+
+        /** @brief Оператор присвоєння копіюванням. */
+        PrintedDocument& operator=(const PrintedDocument& other);
+
+        /** @brief Конструктор переміщення. */
+        PrintedDocument(PrintedDocument&& other) noexcept;
+
+        /** @brief Оператор присвоєння переміщенням. */
+        PrintedDocument& operator=(PrintedDocument&& other) noexcept;
+
+        // Get/Set методи
+
         void SetPageCount(int count);
-        /** @brief Повертає кількість сторінок. @return Кількість сторінок. */
         int GetPageCount() const;
 
-        /** @brief Встановлює тип носія. @param medium - Тип носія. */
         void SetMedium(const std::string& medium);
-        /** @brief Повертає тип носія. @return Тип носія. */
         std::string GetMedium() const;
 
         // Перевизначені методи
+
+         /**
+         * @brief Повертає тип "Printed".
+         */
         std::string GetType() const override;
+
+        /**
+         * @brief Повертає рядок "X сторінок, Тип палітурки".
+         */
         std::string GetDetails() const override;
+
+        /**
+         * @brief Виводить інформацію про друковану книгу.
+         */
         void DisplayInfo() const override;
 
+        /**
+         * @brief Додає специфічні поля до CSV рядка.
+         */
         std::string ToCsv() const override;
+
+        /**
+         * @brief Зчитує специфічні поля з CSV рядка.
+         */
         void FromCsv(const std::string& line) override;
     };
 }
