@@ -1,7 +1,8 @@
-
 #pragma once
 #include <string>
 #include <iostream>
+
+#include "../utils/ISerializable.h"
 
 namespace LibraryCore
 {
@@ -12,7 +13,7 @@ namespace LibraryCore
      * Містить логін, пароль та прапор адміністратора. Потрібен для реалізації
      * авторизації в системі.
      */
-    class User
+	class User : public ISerializable
     {
     private:
         std::string username;
@@ -64,12 +65,11 @@ namespace LibraryCore
          * @brief Формує рядок CSV для запису у файл.
          * @return Рядок у форматі username;password;isAdmin
          */
-        std::string ToCsv() const;
-
+        std::string ToCsv() const override;
         /**
          * @brief Парсить рядок CSV і заповнює поля об'єкта.
          * @param line - Вхідний рядок CSV.
          */
-        void FromCsv(const std::string& line);
+        void FromCsv(const std::string& line) override;
     };
 }

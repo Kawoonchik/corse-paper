@@ -3,6 +3,9 @@
 #include <string>
 #include <iostream>
 
+#include "../utils/ISerializable.h"
+
+
 namespace LibraryCore
 {
     /**
@@ -11,7 +14,7 @@ namespace LibraryCore
     * * Зберігає персональні дані студента, інформацію про курс та групу,
     * а також реалізує логіку серіалізації у формат CSV.
     */
-    class Student
+	class Student : public ISerializable
     {
     private:
         std::string lastName;
@@ -105,12 +108,12 @@ namespace LibraryCore
          * @brief Формує рядок CSV для запису у файл.
          * @param delimiter Розділювач (за замовчуванням ';').
          */
-        std::string ToCsv() const;
+        std::string ToCsv() const override;
 
          /**
          * @brief Заповнює поля об'єкта даними з CSV рядка.
          * @param line Вхідний рядок з файлу.
          */
-        void FromCsv(const std::string& line);
+        void FromCsv(const std::string& line) override;
     };
 }

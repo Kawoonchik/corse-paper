@@ -18,12 +18,6 @@
     <ClInclude Include="core\Student\Student.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="core\Library\Library.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="core\Library\LoanRecord.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="core\Document\Document.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,15 +36,12 @@
     <ClInclude Include="core\Users\User.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="core\utils\ISerializable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\Student\Student.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\Library\Library.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="core\Library\LoanRecord.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">

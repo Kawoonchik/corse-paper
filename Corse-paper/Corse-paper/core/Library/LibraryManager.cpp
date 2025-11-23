@@ -4,6 +4,7 @@
 #include <iostream>
 #include <algorithm>
 #include <ctime>     
+#include <iomanip>
 
 // Константи імен файлів
 namespace
@@ -247,9 +248,29 @@ bool LibraryManager::DeleteStudent(const std::string& cardId)
 
 void LibraryManager::DisplayStudents() const
 {
-    cout << "--- Список студентів (" << students.size() << ") ---" << endl;
-    for (const auto& s : students) s.DisplayInfo();
-    cout << "---------------------------------------------" << endl;
+    if (students.empty()) { cout << "Список пустий." << endl; return; }
+
+    string line = "+------------+-----------------+-----------------+-----------------+--------+------------+";
+
+    cout << line << endl;
+    cout << "| " << std::left << std::setw(10) << "ID Картки"
+        << " | " << std::setw(15) << "Прізвище"
+        << " | " << std::setw(15) << "Ім'я"
+        << " | " << std::setw(15) << "Залікова"
+        << " | " << std::setw(6) << "Курс"
+        << " | " << std::setw(10) << "Група" << " |" << endl;
+    cout << line << endl;
+
+    for (const auto& s : students) {
+        cout << "| " << std::left << std::setw(10) << s.GetReaderCardId()
+            << " | " << std::setw(15) << s.GetLastName()
+            << " | " << std::setw(15) << s.GetFirstName()
+            << " | " << std::setw(15) << s.GetRecordBookNumber()
+            << " | " << std::setw(6) << s.GetCourse()
+            << " | " << std::setw(10) << s.GetGroup() << " |" << endl;
+    }
+    cout << line << endl;
+    cout << " Всього: " << students.size() << endl;
 }
 
 // Управління документами
@@ -310,9 +331,35 @@ bool LibraryManager::DeleteDocument(int id)
 
 void LibraryManager::DisplayDocuments() const
 {
-    cout << "--- Список документів (" << documents.size() << ") ---" << endl;
-    for (const auto& docPtr : documents) docPtr->DisplayInfo();
-    cout << "----------------------------------------------" << endl;
+    if (documents.empty()) { cout << "Фонд пустий." << endl; return; }
+
+    string line = "+------+------------+-------------------------+--------------------+--------+-------------------------------------+";
+
+    cout << line << endl;
+    cout << "| " << std::left << std::setw(4) << "ID"
+        << " | " << std::setw(10) << "Тип"
+        << " | " << std::setw(23) << "Назва"
+        << " | " << std::setw(18) << "Автор"
+        << " | " << std::setw(6) << "Рік"
+        << " | " << std::setw(35) << "Деталі" << " |" << endl;
+    cout << line << endl;
+
+    for (const auto& docPtr : documents) {
+        string title = docPtr->GetTitle();
+        if (title.length() > 23) title = title.substr(0, 20) + "...";
+
+        string author = docPtr->GetAuthor();
+        if (author.length() > 18) author = author.substr(0, 15) + "...";
+
+        cout << "| " << std::left << std::setw(4) << docPtr->GetId()
+            << " | " << std::setw(10) << docPtr->GetType()
+            << " | " << std::setw(23) << title
+            << " | " << std::setw(18) << author
+            << " | " << std::setw(6) << docPtr->GetYear()
+            << " | " << std::setw(35) << docPtr->GetDetails() << " |" << endl;
+    }
+    cout << line << endl;
+    cout << " Всього: " << documents.size() << endl;
 }
 
 //Логіка видачі та повернення книг

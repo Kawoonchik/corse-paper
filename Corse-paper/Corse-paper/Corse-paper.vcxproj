@@ -26,6 +26,7 @@
     <ClInclude Include="core\Library\LibraryManager.h" />
     <ClInclude Include="core\Student\Student.h" />
     <ClInclude Include="core\Users\User.h" />
+    <ClInclude Include="core\utils\ISerializable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\Document\Document.cpp" />

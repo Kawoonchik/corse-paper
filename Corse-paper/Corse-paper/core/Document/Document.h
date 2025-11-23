@@ -13,7 +13,7 @@ namespace LibraryCore
      * * Визначає спільний інтерфейс для всіх типів документів (друкованих та електронних).
      * Реалізує поліморфізм та базову логіку роботи з CSV.
      */
-    class Document
+	class Document : public ISerializable
     {
     protected:
         int id;
@@ -96,13 +96,13 @@ namespace LibraryCore
          * @brief Формує базову частину CSV рядка.
          * @return Рядок "ID;Title;Author;Year".
          */
-        virtual std::string ToCsv() const;
+        std::string ToCsv() const override;
 
          /**
          * @brief Зчитує базові поля з CSV рядка.
          * @param line Вхідний рядок.
          */
-        virtual void FromCsv(const std::string& line);
+        void FromCsv(const std::string& line) override;
 
     protected:
         /**
