@@ -3,6 +3,7 @@
 #include <limits>
 #define NOMINMAX
 #include <windows.h> 
+#include <conio.h>
 
 
 #include "core/Library/LibraryManager.h"
@@ -11,6 +12,8 @@
 
 using namespace std;
 using namespace LibraryCore;
+
+
 
 // Визначення кольорів для консолі
 enum ConsoleColor {
@@ -56,39 +59,6 @@ void SetColor(int text, int bg = 0) {
 void ClearInput() {
     cin.clear();
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
-// Перевірка на скасування операції
-bool IsCancel(const string& val) {
-    if (val == "0") {
-        SetColor(YELLOW);
-        cout << " >>> Операцію скасовано." << endl;
-        SetColor(WHITE);
-        return true;
-    }
-    return false;
-}
-
-// 2. Для цілих чисел (int)
-bool IsCancel(int val) {
-    if (val == 0) {
-        SetColor(YELLOW);
-        cout << " >>> Операцію скасовано." << endl;
-        SetColor(WHITE);
-        return true;
-    }
-    return false;
-}
-
-// 3. Для дробів (double)
-bool IsCancel(double val) {
-    if (val == 0.0) {
-        SetColor(YELLOW);
-        cout << " >>> Операцію скасовано." << endl;
-        SetColor(WHITE);
-        return true;
-    }
-    return false;
 }
 
 void ShowMenu(bool isAdmin) {
@@ -253,7 +223,7 @@ int main() {
             string query;
             cout << " Введіть назву або автора: ";
             cin.ignore(); getline(cin, query);
-            if (IsCancel(query)) break;
+
 
             auto results = app.SearchDocuments(query);
 
@@ -267,9 +237,7 @@ int main() {
         case 2: { // Видача
             string cardId; int docId;
             cout << " ID картки студента: "; cin >> cardId; 
-            if (IsCancel(cardId)) break;
             cout << " ID документа: "; cin >> docId; 
-            if (IsCancel(docId)) break;
 
             if (app.CheckoutBook(cardId, docId)) { SetColor(GREEN); cout << " Успіх!\n"; }
             else { SetColor(RED); cout << " Помилка!\n"; }
@@ -278,8 +246,8 @@ int main() {
 
         case 3: { // Повернення
             string cardId; int docId;
-            cout << " ID картки студента: "; cin >> cardId; if (IsCancel(cardId)) break;
-            cout << " ID документа: "; cin >> docId; if (IsCancel(docId)) break;
+            cout << " ID картки студента: "; cin >> cardId; 
+            cout << " ID документа: "; cin >> docId;
 
             if (app.ReturnBook(cardId, docId)) { SetColor(GREEN); cout << " Успіх!\n"; }
             else { SetColor(RED); cout << " Помилка!\n"; }
@@ -293,12 +261,12 @@ int main() {
         case 5: { // Додавання студента
             string lName, fName, recBook, group, cardId;
             int course;
-            cout << "Прізвище: "; cin >> lName; if (IsCancel(lName)) break;
-            cout << "Ім'я: "; cin >> fName; if (IsCancel(fName)) break;
-            cout << "Номер залікової: "; cin >> recBook; if (IsCancel(recBook)) break;
-            cout << "Курс (1-6): "; cin >> course; if (IsCancel(course)) break;
-            cout << "Група: "; cin >> group; if (IsCancel(group)) break;
-            cout << "Номер чит. квитка: "; cin >> cardId; if (IsCancel(cardId)) break;
+            cout << "Прізвище: "; cin >> lName;
+            cout << "Ім'я: "; cin >> fName;
+            cout << "Номер залікової: "; cin >> recBook;
+            cout << "Курс (1-6): "; cin >> course; 
+            cout << "Група: "; cin >> group; 
+            cout << "Номер чит. квитка: "; cin >> cardId; 
 
             Student s(lName, fName, recBook, course, group, cardId);
             app.AddStudent(s);
@@ -308,26 +276,26 @@ int main() {
         case 6: { // Додавання документа
             int typeChoice;
             cout << "Тип? (1 - Друкований, 2 - Електронний): ";
-            cin >> typeChoice; if (IsCancel(typeChoice)) break;
+            cin >> typeChoice;
 
             string title, author;
             int year;
-            cout << "Назва: "; cin.ignore(); getline(cin, title); if (IsCancel(title)) break;
-            cout << "Автор: "; getline(cin, author); if (IsCancel(author)) break;
-            cout << "Рік: "; cin >> year; if (IsCancel(year)) break;
+            cout << "Назва: "; cin.ignore(); getline(cin, title);
+            cout << "Автор: "; getline(cin, author); 
+            cout << "Рік: "; cin >> year; 
 
             if (typeChoice == 1) {
                 int pages;
                 string medium;
-                cout << "Сторінок: "; cin >> pages; if (IsCancel(pages)) break;
-                cout << "Палітурка: "; cin.ignore(); getline(cin, medium); if (IsCancel(medium)) break;
+                cout << "Сторінок: "; cin >> pages; 
+                cout << "Палітурка: "; cin.ignore(); getline(cin, medium);
                 app.AddDocument(make_unique<PrintedDocument>(0, title, author, year, pages, medium));
             }
             else if (typeChoice == 2) {
                 string format;
                 double size;
-                cout << "Формат (PDF/EPUB): "; cin >> format; if (IsCancel(format)) break;
-                cout << "Розмір (MB): "; cin >> size; if (IsCancel(size)) break;
+                cout << "Формат (PDF/EPUB): "; cin >> format; 
+                cout << "Розмір (MB): "; cin >> size;
                 app.AddDocument(make_unique<ElectronicDocument>(0, title, author, year, format, size));
             }
             break;
@@ -336,19 +304,18 @@ int main() {
         case 7: { // Видалення документа
             int id;
             cout << "ID документа для видалення: "; cin >> id;
-            if (IsCancel(id)) break;
             app.DeleteDocument(id);
             break;
         }
 
         case 8: { // Редагування студента
             string targetId;
-            cout << "Введіть ID картки студента, якого редагуємо: "; cin >> targetId; if (IsCancel(targetId)) break;
+            cout << "Введіть ID картки студента, якого редагуємо: "; cin >> targetId;
 
             string lName, fName, recBook, group;
             int course;
             cout << "--- Введіть НОВІ дані ---" << endl;
-            cout << "Прізвище: "; cin >> lName; if (IsCancel(lName)) break;
+            cout << "Прізвище: "; cin >> lName;
             cout << "Ім'я: "; cin >> fName;
             cout << "Залікова: "; cin >> recBook;
             cout << "Курс: "; cin >> course;
@@ -362,12 +329,12 @@ int main() {
 
         case 9: { // Редагування документа
             int targetId;
-            cout << "Введіть ID документа для зміни: "; cin >> targetId; if (IsCancel(targetId)) break;
+            cout << "Введіть ID документа для зміни: "; cin >> targetId;
 
             string title, author;
             int year;
             cout << "--- Введіть НОВІ дані ---" << endl;
-            cout << "Назва: "; cin.ignore(); getline(cin, title); if (IsCancel(title)) break;
+            cout << "Назва: "; cin.ignore(); getline(cin, title); 
             cout << "Автор: "; getline(cin, author);
             cout << "Рік: "; cin >> year;       
 
@@ -383,7 +350,7 @@ int main() {
 
         case 11: { // Фільтрація
             int fType;
-            cout << "Показати: 1-Друковані, 2-Електронні: "; cin >> fType; if (IsCancel(fType)) break;
+            cout << "Показати: 1-Друковані, 2-Електронні: "; cin >> fType;
             string typeStr = (fType == 1) ? "Printed" : "Electronic";
 
             auto filtered = app.FilterDocumentsByType(typeStr);
@@ -409,8 +376,8 @@ int main() {
             if (!isAdmin) { cout << "Доступ заборонено.\n"; break; }
             string uName, uPass;
             bool adminFlag;
-            cout << "Новий логін: "; cin >> uName; if (IsCancel(uName)) break;
-            cout << "Новий пароль: "; cin >> uPass; if (IsCancel(uPass)) break;
+            cout << "Новий логін: "; cin >> uName; 
+            cout << "Новий пароль: "; cin >> uPass; 
             cout << "Права адміна? (1-Так, 0-Ні): "; cin >> adminFlag;
             app.RegisterUser(uName, uPass, adminFlag);
             break;
@@ -419,7 +386,7 @@ int main() {
         case 16: {
             if (!isAdmin) { cout << "Доступ заборонено.\n"; break; }
             string uName;
-            cout << "Логін для видалення: "; cin >> uName; if (IsCancel(uName)) break;
+            cout << "Логін для видалення: "; cin >> uName; 
             app.DeleteUser(uName);
             break;
         }

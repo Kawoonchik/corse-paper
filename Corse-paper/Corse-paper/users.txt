@@ -1,2 +1,3 @@
 admin;admin123;1
 Kawoon;Abracadabra;0
+цв;акасу;0

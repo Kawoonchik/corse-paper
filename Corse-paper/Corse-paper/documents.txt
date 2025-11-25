@@ -1,2 +1,3 @@
 Printed;1;Кобзар;Шевченко;1840;200;Тверда
 Electronic;2;C++ guide;Microsoft;2013;PDF;15.5
+Electronic;3;546;674564;0;;-9.25596e+61
