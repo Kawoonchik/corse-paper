@@ -19,7 +19,10 @@ namespace LibraryCore
     {
     }
 
-    Document::~Document() {}
+    Document::~Document() 
+    {
+        cout << " Документ знищено: " << title << endl;
+    }
 
     // Копіювання
     Document::Document(const Document& other)

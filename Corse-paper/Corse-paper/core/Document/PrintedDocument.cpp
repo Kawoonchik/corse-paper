@@ -3,6 +3,7 @@
 #include <utility> 
 
 using std::string;
+using namespace std;
 
 namespace LibraryCore
 {
@@ -20,7 +21,10 @@ namespace LibraryCore
     {
     }
 
-    PrintedDocument::~PrintedDocument() {}
+    PrintedDocument::~PrintedDocument() 
+    {
+        cout << " Документ знищено: " << title << endl;
+    }
 
 	// Копіювання та переміщення
     PrintedDocument::PrintedDocument(const PrintedDocument& other)
@@ -42,9 +46,9 @@ namespace LibraryCore
     }
 
     PrintedDocument::PrintedDocument(PrintedDocument&& other) noexcept
-        : Document(std::move(other)) 
+        : Document(move(other)) 
         , pageCount(other.pageCount)
-        , medium(std::move(other.medium))
+        , medium(move(other.medium))
     {
         other.pageCount = 0;
     }
@@ -53,9 +57,9 @@ namespace LibraryCore
     {
         if (this == &other) return *this;
 
-        Document::operator=(std::move(other)); 
+        Document::operator=(move(other)); 
         pageCount = other.pageCount;
-        medium = std::move(other.medium);
+        medium = move(other.medium);
 
         other.pageCount = 0;
         return *this;
@@ -72,28 +76,28 @@ namespace LibraryCore
 
     string PrintedDocument::GetDetails() const
     {
-        return std::to_string(pageCount) + " pages, " + medium;
+        return to_string(pageCount) + " pages, " + medium;
     }
 
     void PrintedDocument::DisplayInfo() const
     {
         Document::DisplayInfo();
-        std::cout << " | [BOOK] " << GetDetails() << std::endl;
+        cout << " | [BOOK] " << GetDetails() << endl;
     }
 
     string PrintedDocument::ToCsv() const
     {
-        return Document::ToCsv() + ";" + std::to_string(pageCount) + ";" + medium;
+        return Document::ToCsv() + ";" + to_string(pageCount) + ";" + medium;
     }
 
-    void PrintedDocument::FromCsv(const std::string& line)
+    void PrintedDocument::FromCsv(const string& line)
     {
         Document::FromCsv(line); 
 
         auto tokens = this->SplitCsvLine(line);
         if (tokens.size() >= 6)
         {
-            try { pageCount = std::stoi(tokens[4]); }
+            try { pageCount = stoi(tokens[4]); }
             catch (...) { pageCount = 0; }
             medium = tokens[5];
         }

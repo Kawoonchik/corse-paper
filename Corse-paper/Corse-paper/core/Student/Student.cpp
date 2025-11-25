@@ -1,7 +1,7 @@
 #include "Student.h"
-#include <sstream>  // Для stringstream (парсинг CSV)
-#include <vector>   // Для зберігання частин рядка при парсингу
-#include <utility>  // Для std::move
+#include <sstream>  
+#include <vector> 
+#include <utility> 
 
 using std::cout;
 using std::endl;
@@ -9,7 +9,7 @@ using std::string;
 
 namespace LibraryCore
 {
-    // --- Конструктори ---
+    // Конструктори 
 
     Student::Student() : course(0)
     {
@@ -34,12 +34,10 @@ namespace LibraryCore
 
     Student::~Student()
     {
-        // Вимога 2.3: повідомлення про знищення
-        // (Можна закоментувати, щоб не смітило в консоль під час роботи програми)
-        // cout << "[DEBUG] Student destroyed: " << lastName << endl; 
+        cout << " Студента знищено: " << lastName << endl;
     }
 
-    // --- Rule of 5 Implementation ---
+    // Методи копіювання і переміщення
 
     // Копіювання
     Student::Student(const Student& other)

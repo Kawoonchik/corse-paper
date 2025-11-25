@@ -6,7 +6,6 @@ using std::string;
 
 namespace LibraryCore
 {
-    // Допоміжний метод для розбиття рядка CSV (схожий на той, що був у Document)
     namespace
     {
         std::vector<string> SplitCsvLine(const string& line, char delimiter = ';')
@@ -22,7 +21,7 @@ namespace LibraryCore
         }
     }
 
-    // --- 1. Конструктори ---
+    // Конструктори
 
     User::User() : isAdmin(false) {}
 
@@ -31,24 +30,21 @@ namespace LibraryCore
     {
     }
 
-    // --- 2. Getters ---
+	// Методи Get/Set
 
     string User::GetUsername() const { return username; }
     string User::GetPassword() const { return password; }
     bool User::IsAdmin() const { return isAdmin; }
 
-    // --- 3. Setters ---
-
     void User::SetUsername(const string& name) { username = name; }
     void User::SetPassword(const string& pass) { password = pass; }
     void User::SetIsAdmin(bool status) { isAdmin = status; }
 
-    // --- 4. CSV методи ---
+    // CSV методи 
 
     string User::ToCsv() const
     {
         std::stringstream ss;
-        // Перетворюємо bool на 1 або 0
         ss << username << ";" << password << ";" << (isAdmin ? "1" : "0");
         return ss.str();
     }
@@ -61,7 +57,6 @@ namespace LibraryCore
         {
             username = tokens[0];
             password = tokens[1];
-            // 1 -> true, 0 -> false
             isAdmin = (tokens[2] == "1");
         }
     }

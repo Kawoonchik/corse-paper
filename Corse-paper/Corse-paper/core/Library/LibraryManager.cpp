@@ -6,15 +6,11 @@
 #include <ctime>     
 #include <iomanip>
 
-// Константи імен файлів
-namespace
-{
-    const std::string STUDENTS_FILE = "students.txt";
-    const std::string DOCUMENTS_FILE = "documents.txt";
-    const std::string USERS_FILE = "users.txt";
-    const std::string TRANSACTIONS_FILE = "transactions.txt";
-}
+#include "../utils/Constants.h"
 
+// Константи імен файлів
+
+using namespace LibraryCore::Constants;
 using namespace LibraryCore;
 using std::string;
 using std::cout;
@@ -60,6 +56,8 @@ LibraryManager::LibraryManager() : currentUser(nullptr)
 LibraryManager::~LibraryManager()
 {
     SaveAllData();
+    cout << " Менеджера знищено: "  << endl;
+
 }
 
 // Авторизація
@@ -94,13 +92,13 @@ bool LibraryManager::RegisterUser(const string& username, const string& password
         [&](const User& u) { return u.GetUsername() == username; });
 
     if (it != users.end()) {
-        cout << "Помилка: Користувач з таким логіном вже існує!" << endl;
+        cout << ERR_USER_EXISTS << endl;
         return false;
     }
 
     users.emplace_back(username, password, isAdmin);
     SaveAllData();
-    cout << "Успіх: Користувача зареєстровано." << endl;
+    cout << MSG_SUCCESS_REGISTERED << endl;
     return true;
 }
 
@@ -109,7 +107,7 @@ bool LibraryManager::DeleteUser(const string& username)
     if (!currentUser || !currentUser->IsAdmin()) return false;
 
     if (currentUser->GetUsername() == username) {
-        cout << "Помилка: Неможливо видалити власний акаунт." << endl;
+        cout << ERR_DELETE_SELF << endl;
         return false;
     }
 
@@ -119,10 +117,10 @@ bool LibraryManager::DeleteUser(const string& username)
     if (it != users.end()) {
         users.erase(it, users.end());
         SaveAllData();
-        cout << "Успіх: Користувача видалено." << endl;
+        cout << MSG_SUCCESS_DELETED_USER << endl;
         return true;
     }
-    cout << "Помилка: Користувача не знайдено." << endl;
+    cout << ERR_USER_NOT_FOUND << endl;
     return false;
 }
 
@@ -141,7 +139,7 @@ void LibraryManager::DisplayUserList() const
 void LibraryManager::LoadAllData()
 {
     // 1. Завантаження студентів
-    std::ifstream studentFile(STUDENTS_FILE);
+    std::ifstream studentFile(FILE_STUDENTS);
     string line;
     while (std::getline(studentFile, line)) {
         Student s; s.FromCsv(line);
@@ -149,21 +147,21 @@ void LibraryManager::LoadAllData()
     }
 
     // 2. Завантаження документів
-    std::ifstream docFile(DOCUMENTS_FILE);
+    std::ifstream docFile(FILE_DOCUMENTS);
     while (std::getline(docFile, line)) {
         auto doc = CreateDocumentFromCsv(line);
         if (doc) documents.push_back(std::move(doc));
     }
 
     // 3. Завантаження користувачів
-    std::ifstream userFile(USERS_FILE);
+    std::ifstream userFile(FILE_USERS);
     while (std::getline(userFile, line)) {
         User u; u.FromCsv(line);
         users.push_back(u);
     }
 
     // 4. Завантаження історії видач
-    std::ifstream transFile(TRANSACTIONS_FILE);
+    std::ifstream transFile(FILE_TRANSACTIONS);
     while (std::getline(transFile, line)) {
         BookRecord record; record.FromCsv(line);
         transactions.push_back(record);
@@ -173,21 +171,21 @@ void LibraryManager::LoadAllData()
 void LibraryManager::SaveAllData() const
 {
     // 1. Збереження студентів
-    std::ofstream studentFile(STUDENTS_FILE);
+    std::ofstream studentFile(FILE_STUDENTS);
     for (const auto& s : students) studentFile << s.ToCsv() << "\n";
 
     // 2. Збереження документів
-    std::ofstream docFile(DOCUMENTS_FILE);
+    std::ofstream docFile(FILE_DOCUMENTS);
     for (const auto& docPtr : documents) {
         docFile << docPtr->GetType() << ";" << docPtr->ToCsv() << "\n";
     }
 
     // 3. Збереження користувачів
-    std::ofstream userFile(USERS_FILE);
+    std::ofstream userFile(FILE_USERS);
     for (const auto& u : users) userFile << u.ToCsv() << "\n";
 
     // 4. Збереження транзакцій
-    std::ofstream transFile(TRANSACTIONS_FILE);
+    std::ofstream transFile(FILE_TRANSACTIONS);
     for (const auto& r : transactions) transFile << r.ToCsv() << "\n";
 }
 
@@ -200,12 +198,12 @@ void LibraryManager::AddStudent(const Student& student)
         [&](const Student& s) { return s.GetReaderCardId() == student.GetReaderCardId(); });
 
     if (it != students.end()) {
-        cout << "Помилка: Студент з таким читацьким квитком вже існує." << endl;
+        cout << ERR_STUDENT_EXISTS << endl;
         return;
     }
     students.push_back(student);
     SaveAllData();
-    cout << "Успіх: Студента додано." << endl;
+    cout << MSG_SUCCESS_ADDED_STUDENT << endl;
 }
 
 void LibraryManager::EditStudent(const std::string& cardId, const Student& updatedStudent)
@@ -216,10 +214,10 @@ void LibraryManager::EditStudent(const std::string& cardId, const Student& updat
     if (it != students.end()) {
         *it = updatedStudent;
         SaveAllData();
-        cout << "Успіх: Дані студента оновлено." << endl;
+        cout << MSG_SUCCESS_UPDATED_STUDENT << endl;
     }
     else {
-        cout << "Помилка: Студента не знайдено." << endl;
+        cout << ERR_STUDENT_NOT_FOUND << endl;
     }
 }
 
@@ -229,7 +227,7 @@ bool LibraryManager::DeleteStudent(const std::string& cardId)
         [&](const BookRecord& r) { return r.readerCardId == cardId; });
 
     if (transactionIt != transactions.end()) {
-        cout << "Помилка: Неможливо видалити. Студент має неповернуті книги!" << endl;
+        cout << ERR_STUDENT_HAS_BOOKS << endl;
         return false;
     }
 
@@ -239,16 +237,16 @@ bool LibraryManager::DeleteStudent(const std::string& cardId)
     if (it != students.end()) {
         students.erase(it, students.end());
         SaveAllData();
-        cout << "Успіх: Студента видалено." << endl;
+        cout << MSG_SUCCESS_DELETED_STUDENT << endl;
         return true;
     }
-    cout << "Помилка: Студента не знайдено." << endl;
+    cout << ERR_STUDENT_NOT_FOUND << endl;
     return false;
 }
 
 void LibraryManager::DisplayStudents() const
 {
-    if (students.empty()) { cout << "Список пустий." << endl; return; }
+    if (students.empty()) { cout << TXT_LIST_EMPTY << endl; return; }
 
     string line = "+------------+-----------------+-----------------+-----------------+--------+------------+";
 
@@ -286,7 +284,7 @@ void LibraryManager::AddDocument(std::unique_ptr<Document> doc)
 
     documents.push_back(std::move(doc));
     SaveAllData();
-    cout << "Успіх: Документ додано (ID: " << maxId + 1 << ")" << endl;
+    cout << MSG_SUCCESS_ADDED_DOC << maxId + 1 << ")" << endl;
 }
 
 void LibraryManager::EditDocument(int id, const Document& updatedData)
@@ -299,10 +297,10 @@ void LibraryManager::EditDocument(int id, const Document& updatedData)
         (*it)->SetAuthor(updatedData.GetAuthor());
         (*it)->SetYear(updatedData.GetYear());
         SaveAllData();
-        cout << "Успіх: Базові дані документа оновлено." << endl;
+        cout << MSG_SUCCESS_UPDATED_DOC << endl;
     }
     else {
-        cout << "Помилка: Документ не знайдено." << endl;
+        cout << ERR_DOC_NOT_FOUND << endl;
     }
 }
 
@@ -312,7 +310,7 @@ bool LibraryManager::DeleteDocument(int id)
         [&](const BookRecord& r) { return r.documentId == id; });
 
     if (transIt != transactions.end()) {
-        cout << "Помилка: Неможливо видалити. Документ зараз у читача." << endl;
+        cout << ERR_DOC_CHECKED_OUT << endl;
         return false;
     }
 
@@ -322,16 +320,16 @@ bool LibraryManager::DeleteDocument(int id)
     if (it != documents.end()) {
         documents.erase(it, documents.end());
         SaveAllData();
-        cout << "Успіх: Документ видалено." << endl;
+        cout << MSG_SUCCESS_DELETED_DOC << endl;
         return true;
     }
-    cout << "Помилка: Документ з таким ID не знайдено." << endl;
+    cout << ERR_DOC_NOT_FOUND << endl;
     return false;
 }
 
 void LibraryManager::DisplayDocuments() const
 {
-    if (documents.empty()) { cout << "Фонд пустий." << endl; return; }
+    if (documents.empty()) { cout << TXT_FUND_EMPTY << endl; return; }
 
     string line = "+------+------------+-------------------------+--------------------+--------+-------------------------------------+";
 
@@ -371,21 +369,21 @@ bool LibraryManager::CheckoutBook(const string& cardId, int documentId)
     auto sIt = std::find_if(students.begin(), students.end(),
         [&](const Student& s) { return s.GetReaderCardId() == cardId; });
     if (sIt == students.end()) {
-        cout << "Помилка: Студента не знайдено." << endl; return false;
+        cout << ERR_STUDENT_NOT_FOUND << endl; return false;
     }
 
     // 2. Чи існує документ?
     auto dIt = std::find_if(documents.begin(), documents.end(),
         [&](const std::unique_ptr<Document>& d) { return d->GetId() == documentId; });
     if (dIt == documents.end()) {
-        cout << "Помилка: Документ не знайдено." << endl; return false;
+        cout << ERR_DOC_NOT_FOUND << endl; return false;
     }
 
     // 3. Чи документ вільний?
     auto tIt = std::find_if(transactions.begin(), transactions.end(),
         [&](const BookRecord& r) { return r.documentId == documentId; });
     if (tIt != transactions.end()) {
-        cout << "Помилка: Цей документ вже виданий." << endl; return false;
+        cout << ERR_DOC_ALREADY_ISSUED << endl; return false;
     }
 
     // Видача
@@ -397,7 +395,7 @@ bool LibraryManager::CheckoutBook(const string& cardId, int documentId)
 
     transactions.push_back(record);
     SaveAllData();
-    cout << "Успіх: Книгу видано." << endl;
+    cout << MSG_SUCCESS_CHECKOUT << endl;
     return true;
 }
 
@@ -411,10 +409,10 @@ bool LibraryManager::ReturnBook(const string& cardId, int documentId)
     if (it != transactions.end()) {
         transactions.erase(it, transactions.end());
         SaveAllData();
-        cout << "Успіх: Книгу повернуто." << endl;
+        cout << MSG_SUCCESS_RETURN << endl;
         return true;
     }
-    cout << "Помилка: Запис про видачу не знайдено (Студент не брав цю книгу)." << endl;
+    cout << ERR_TRANS_NOT_FOUND << endl;
     return false;
 }
 
@@ -432,7 +430,7 @@ void LibraryManager::DisplayDebtorList() const
         }
     }
 
-    if (!found) cout << "Боржників немає." << endl;
+    if (!found) cout << TXT_NO_DEBTORS << endl;
     cout << "--------------------------------------------" << endl;
 }
 
@@ -456,7 +454,7 @@ void LibraryManager::SortDocumentsByTitle()
         [](const std::unique_ptr<Document>& a, const std::unique_ptr<Document>& b) {
             return a->GetTitle() < b->GetTitle();
         });
-    cout << "Виконано: Список документів відсортовано за назвою." << endl;
+    cout << MSG_SORTED << endl;
     DisplayDocuments();
 }
 

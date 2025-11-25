@@ -10,6 +10,9 @@
 #include "core/Document/PrintedDocument.h"
 #include "core/Document/ElectronicDocument.h"
 
+#include "core/utils/Constants.h"
+using namespace LibraryCore::Constants;
+
 using namespace std;
 using namespace LibraryCore;
 
@@ -177,12 +180,12 @@ int main() {
         if (app.Login(username, password)) {
             loggedIn = true;
             SetColor(GREEN);
-            cout << "\n Вхід успішний! Завантаження..." << endl;
+            cout << "\n" << MSG_LOGIN_SUCCESS << endl;
             Sleep(1000);
         }
         else {
             SetColor(RED);
-            cout << "\n Помилка входу. Невірний логін або пароль." << endl;
+            cout << "\n " << ERR_LOGIN_FAILED << endl;
             SetColor(WHITE);
             cout << " Спробувати ще раз? (y/n): ";
             char choice; cin >> choice;
@@ -216,7 +219,7 @@ int main() {
         case 0:
             app.Logout();
             SetColor(GREEN);
-            cout << " Робота завершена. Дані збережено." << endl;
+            cout << MSG_BYE << endl;
             return 0;
 
         case 1: { // Пошук
@@ -240,7 +243,7 @@ int main() {
             cout << " ID документа: "; cin >> docId; 
 
             if (app.CheckoutBook(cardId, docId)) { SetColor(GREEN); cout << " Успіх!\n"; }
-            else { SetColor(RED); cout << " Помилка!\n"; }
+            else { SetColor(RED); cout << "\n" << ERR_GENERAL << "\n"; }
             break;
         }
 
@@ -250,7 +253,7 @@ int main() {
             cout << " ID документа: "; cin >> docId;
 
             if (app.ReturnBook(cardId, docId)) { SetColor(GREEN); cout << " Успіх!\n"; }
-            else { SetColor(RED); cout << " Помилка!\n"; }
+            else { SetColor(RED); cout << "\n" << ERR_GENERAL << "\n"; }
             break;
         }
 
@@ -314,7 +317,7 @@ int main() {
 
             string lName, fName, recBook, group;
             int course;
-            cout << "--- Введіть НОВІ дані ---" << endl;
+            cout << "--- Введіть нові дані ---" << endl;
             cout << "Прізвище: "; cin >> lName;
             cout << "Ім'я: "; cin >> fName;
             cout << "Залікова: "; cin >> recBook;
@@ -333,7 +336,7 @@ int main() {
 
             string title, author;
             int year;
-            cout << "--- Введіть НОВІ дані ---" << endl;
+            cout << "--- Введіть нові дані ---" << endl;
             cout << "Назва: "; cin.ignore(); getline(cin, title); 
             cout << "Автор: "; getline(cin, author);
             cout << "Рік: "; cin >> year;       
@@ -399,11 +402,11 @@ int main() {
 
         default:
             SetColor(RED);
-            cout << " Невірний вибір." << endl;
+            cout << ERR_INVALID_CHOICE << endl;
         }
 
         SetColor(DARKGRAY);
-        cout << "\n [Натисніть Enter для повернення в меню...]";
+        cout << "\n" << TXT_PRESS_ANY_KEY;
         SetColor(WHITE);
         cin.ignore(); cin.get();
     }
