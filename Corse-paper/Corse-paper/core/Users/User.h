@@ -6,13 +6,10 @@
 
 namespace LibraryCore
 {
-    /**
-     * @class User
-     * @brief Клас для зберігання облікових даних користувачів.
-     *
-     * Містить логін, пароль та прапор адміністратора. Потрібен для реалізації
-     * авторизації в системі.
-     */
+    /// @class User
+    /// @brief Клас для зберігання облікових даних користувачів.
+    /// Містить логін, пароль та прапор адміністратора. Потрібен для реалізації
+    /// авторизації в системі.
 	class User : public ISerializable
     {
     private:
@@ -21,55 +18,68 @@ namespace LibraryCore
         bool isAdmin;
 
     public:
-        // --- 1. Конструктори та деструктор ---
+        // Конструктори та деструктор
 
-        /** @brief Конструктор за замовчуванням. */
+        /// @brief Конструктор за замовчуванням.
         User();
 
-        /**
-         * @brief Конструктор з параметрами.
-         * @param username - Логін користувача.
-         * @param password - Пароль користувача (зберігається у відкритому вигляді).
-         * @param isAdmin - Прапор, чи є користувач адміністратором.
-         */
+        /// @brief Конструктор з параметрами.
+        /// @param username - Логін користувача.
+        /// @param password - Пароль користувача (зберігається у відкритому вигляді).
+        /// @param isAdmin - Прапор, чи є користувач адміністратором.
         User(const std::string& username, const std::string& password, bool isAdmin);
 
-        /** @brief Деструктор. */
+        /// @brief Деструктор.
         ~User() = default;
 
-        // Rule of 5 (використовуємо default для простих полів)
-        User(const User& other) = default;
-        User& operator=(const User& other) = default;
-        User(User&& other) noexcept = default;
-        User& operator=(User&& other) noexcept = default;
+        // Копіювання та переміщення
 
-        // --- 2. Getters ---
-        /** @brief Повертає логін користувача. @return Логін. */
+        User(const User& other) = default;
+        /// @brief Конструктор копіювання. 
+
+        User& operator=(const User& other) = default;
+        /// @brief Оператор присвоєння копіюванням.
+
+        User(User&& other) noexcept = default;
+        /// @brief Конструктор переміщення. 
+
+        User& operator=(User&& other) noexcept = default;
+        /// @brief Оператор присвоєння переміщенням.
+
+
+        // Get / Set методи
+        /// @brief Повертає логін користувача. 
+        /// @return Логін.
         std::string GetUsername() const;
-        /** @brief Повертає пароль користувача. @return Пароль. */
+
+        /// @brief Повертає пароль користувача. 
+        /// @return Пароль.
         std::string GetPassword() const;
-        /** @brief Перевіряє, чи є користувач адміністратором. @return true, якщо адміністратор. */
+
+        /// @brief Перевіряє, чи є користувач адміністратором.
+        /// @return true, якщо адміністратор.
         bool IsAdmin() const;
 
-        // --- 3. Setters ---
-        /** @brief Встановлює логін користувача. @param username - Новий логін. */
+        /// @brief Встановлює логін користувача. 
+        /// @param username - Новий логін.
         void SetUsername(const std::string& username);
-        /** @brief Встановлює пароль користувача. @param password - Новий пароль. */
+
+        /// @brief Встановлює пароль користувача.
+        /// @param password - Новий пароль.
         void SetPassword(const std::string& password);
-        /** @brief Встановлює статус адміністратора. @param isAdmin - Статус (true/false). */
+
+        /// @brief Встановлює статус адміністратора. 
+        /// @param isAdmin - Статус (true/false).
         void SetIsAdmin(bool isAdmin);
 
-        // --- 4. CSV методи ---
+        // CSV методи 
 
-        /**
-         * @brief Формує рядок CSV для запису у файл.
-         * @return Рядок у форматі username;password;isAdmin
-         */
+        /// @brief Формує рядок CSV для запису у файл.
+        /// @return Рядок у форматі username;password;isAdmin
         std::string ToCsv() const override;
-        /**
-         * @brief Парсить рядок CSV і заповнює поля об'єкта.
-         * @param line - Вхідний рядок CSV.
-         */
+
+        /// @brief Парсить рядок CSV і заповнює поля об'єкта.
+        /// @param line - Вхідний рядок CSV.
         void FromCsv(const std::string& line) override;
     };
 }
