@@ -1,4 +1,4 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <string>
 #include <limits>
 #define NOMINMAX
@@ -14,14 +14,7 @@ using namespace std;
 using namespace LibraryCore;
 using namespace LibraryCore::Constants;
 
-#define KEY_ESC 27
-#define KEY_ENTER 13
-#define KEY_BACKSPACE 8
-#define KEY_F1_A 0
-#define KEY_F1_B 224
-#define KEY_F1_CODE 59
-
-// --- КОЛЬОРИ ---
+// --- РљРћР›Р¬РћР Р ---
 enum ConsoleColor {
     BLACK = 0, BLUE = 1, GREEN = 2, CYAN = 3, RED = 4,
     MAGENTA = 5, BROWN = 6, LIGHTGRAY = 7, DARKGRAY = 8,
@@ -47,129 +40,8 @@ void ClearInput() {
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-// --- ТИПИ ВВОДУ ---
-enum InputType {
-    ANY,            // Будь-які символи (для паролів, назв з цифрами)
-    TEXT_ONLY,      // Тільки букви (для імен, прізвищ)
-    DIGITS_ONLY,    // Тільки цифри (для ID, кількості сторінок)
-    DOUBLE_ONLY     // Цифри і одна крапка (для дробових чисел)
-};
 
-// Попереднє оголошення
-void ShowHelp();
-
-/**
- * @brief Потужна функція вводу з фільтрацією символів.
- * prompt: Текст запитання.
- * outVal: Куди записати результат.
- * type: Режим фільтрації (TEXT_ONLY, DIGITS_ONLY...).
- * isPassword: Чи маскувати зірочками.
- */
-bool ReadString(string prompt, string& outVal, InputType type = ANY, bool isPassword = false) {
-    string input = "";
-    int ch;
-
-    cout << " " << prompt << ": ";
-
-    while (true) {
-        ch = _getch();
-
-        // --- 1. ESC (Скасування) ---
-        if (ch == KEY_ESC) {
-            SetColor(YELLOW); cout << " [СКАСОВАНО]" << endl; SetColor(WHITE);
-            return false;
-        }
-        // --- 2. F1 (Допомога) ---
-        else if (ch == KEY_F1_A || ch == KEY_F1_B) {
-            if (_getch() == KEY_F1_CODE) {
-                ShowHelp();
-                system("cls");
-                cout << "\n (Повернення до вводу...)" << endl;
-                cout << " " << prompt << ": ";
-                if (isPassword) { for (size_t i = 0; i < input.length(); i++) cout << "*"; }
-                else cout << input;
-            }
-        }
-        // --- 3. ENTER (Підтвердження) ---
-        else if (ch == KEY_ENTER) {
-            if (input.empty()) continue; // Заборона пустого вводу
-            cout << endl;
-            outVal = input;
-            return true;
-        }
-        // --- 4. BACKSPACE (Стирання) ---
-        else if (ch == KEY_BACKSPACE) {
-            if (!input.empty()) {
-                input.pop_back();
-                cout << "\b \b";
-            }
-        }
-        // --- 5. ВВІД СИМВОЛІВ (З ФІЛЬТРАЦІЄЮ) ---
-        else if (ch >= 32 && ch <= 255) {
-            bool isValid = true;
-
-            if (type == TEXT_ONLY) {
-                // Дозволяємо тільки букви (латиниця/кирилиця) та пробіл
-                // isalpha працює для стандартних, для кирилиці у Windows-1251 це теж працюватиме
-                // якщо char >= 192 (це коди кирилиці)
-                if (!isalpha(ch) && ch != ' ' && (unsigned char)ch < 192) isValid = false;
-            }
-            else if (type == DIGITS_ONLY) {
-                // Тільки цифри 0-9
-                if (!isdigit(ch)) isValid = false;
-            }
-            else if (type == DOUBLE_ONLY) {
-                // Цифри і одна крапка
-                if (!isdigit(ch) && ch != '.') isValid = false;
-                if (ch == '.' && input.find('.') != string::npos) isValid = false; // Друга крапка заборонена
-            }
-
-            if (isValid) {
-                input += (char)ch;
-                if (isPassword) cout << '*'; else cout << (char)ch;
-            }
-        }
-    }
-}
-
-// Універсальна читалка (Автоматично підбирає тип перевірки)
-template <typename T>
-bool ReadValue(string prompt, T& outVal, InputType type = ANY) {
-    string temp;
-
-    // Автоматичне визначення типу, якщо користувач не вказав вручну
-    InputType autoType = type;
-    if (type == ANY) { // Якщо тип не задано примусово
-        if constexpr (std::is_same_v<T, int>) autoType = DIGITS_ONLY;
-        else if constexpr (std::is_same_v<T, double>) autoType = DOUBLE_ONLY;
-    }
-
-    // Викликаємо ReadString з потрібним фільтром
-    if (!ReadString(prompt, temp, autoType)) return false;
-
-    try {
-        if constexpr (std::is_same_v<T, int>) outVal = stoi(temp);
-        else if constexpr (std::is_same_v<T, double>) outVal = stod(temp);
-        else if constexpr (std::is_same_v<T, string>) outVal = temp;
-        return true;
-    }
-    catch (...) {
-        SetColor(RED); cout << " Помилка конвертації!" << endl; SetColor(WHITE);
-        return false;
-    }
-}
-
-// Спеціалізація для string
-template <>
-bool ReadValue<string>(string prompt, string& outVal, InputType type) {
-    return ReadString(prompt, outVal, type);
-}
-
-// Макрос для скорочення (підтримує передачу типу вводу)
-#define INPUT(prompt, var, ...) if(!ReadValue(prompt, var, ##__VA_ARGS__)) { break; }
-
-// --- МЕНЮ ---
-
+// --- РњР•РќР® ---
 void PrintItem(int num, string text) {
     SetColor(YELLOW); cout << " " << num << ". ";
     SetColor(WHITE); cout << text << endl;
@@ -178,46 +50,46 @@ void PrintItem(int num, string text) {
 void ShowMenu(bool isAdmin) {
     SetColor(LIGHTCYAN);
     cout << "\n========================================" << endl;
-    cout << "   СИСТЕМА УПРАВЛІННЯ БІБЛІОТЕКОЮ" << endl;
+    cout << "   РЎРРЎРўР•РњРђ РЈРџР РђР’Р›Р†РќРќРЇ Р‘Р†Р‘Р›Р†РћРўР•РљРћР®" << endl;
     cout << "========================================" << endl;
     SetColor(WHITE);
 
-    SetColor(YELLOW); cout << "1."; SetColor(WHITE); cout << " Пошук документів (за назвою/автором)" << endl;
-    SetColor(YELLOW); cout << "2."; SetColor(WHITE); cout << " Видати книгу студенту" << endl;
-    SetColor(YELLOW); cout << "3."; SetColor(WHITE); cout << " Прийняти книгу від студента" << endl;
-    SetColor(YELLOW); cout << "4."; SetColor(WHITE); cout << " Список боржників (прострочені книги)" << endl;
+    SetColor(YELLOW); cout << "1."; SetColor(WHITE); cout << " РџРѕС€СѓРє РґРѕРєСѓРјРµРЅС‚С–РІ (Р·Р° РЅР°Р·РІРѕСЋ/Р°РІС‚РѕСЂРѕРј)" << endl;
+    SetColor(YELLOW); cout << "2."; SetColor(WHITE); cout << " Р’РёРґР°С‚Рё РєРЅРёРіСѓ СЃС‚СѓРґРµРЅС‚Сѓ" << endl;
+    SetColor(YELLOW); cout << "3."; SetColor(WHITE); cout << " РџСЂРёР№РЅСЏС‚Рё РєРЅРёРіСѓ РІС–Рґ СЃС‚СѓРґРµРЅС‚Р°" << endl;
+    SetColor(YELLOW); cout << "4."; SetColor(WHITE); cout << " РЎРїРёСЃРѕРє Р±РѕСЂР¶РЅРёРєС–РІ (РїСЂРѕСЃС‚СЂРѕС‡РµРЅС– РєРЅРёРіРё)" << endl;
 
     SetColor(DARKGRAY); cout << "----------------------------------------" << endl;
-    SetColor(YELLOW); cout << "5."; SetColor(WHITE); cout << " Додати нового студента" << endl;
-    SetColor(YELLOW); cout << "6."; SetColor(WHITE); cout << " Додати новий документ" << endl;
-    SetColor(YELLOW); cout << "7."; SetColor(WHITE); cout << " Видалити документ" << endl;
+    SetColor(YELLOW); cout << "5."; SetColor(WHITE); cout << " Р”РѕРґР°С‚Рё РЅРѕРІРѕРіРѕ СЃС‚СѓРґРµРЅС‚Р°" << endl;
+    SetColor(YELLOW); cout << "6."; SetColor(WHITE); cout << " Р”РѕРґР°С‚Рё РЅРѕРІРёР№ РґРѕРєСѓРјРµРЅС‚" << endl;
+    SetColor(YELLOW); cout << "7."; SetColor(WHITE); cout << " Р’РёРґР°Р»РёС‚Рё РґРѕРєСѓРјРµРЅС‚" << endl;
 
     SetColor(DARKGRAY); cout << "----------------------------------------" << endl;
-    SetColor(YELLOW); cout << "8."; SetColor(WHITE); cout << " [РЕДАГУВАННЯ] Змінити дані студента" << endl;
-    SetColor(YELLOW); cout << "9."; SetColor(WHITE); cout << " [РЕДАГУВАННЯ] Змінити дані документа" << endl;
-    SetColor(YELLOW); cout << "10."; SetColor(WHITE); cout << " [СОРТУВАННЯ] Сортувати документи за назвою" << endl;
-    SetColor(YELLOW); cout << "11."; SetColor(WHITE); cout << " [ФІЛЬТР] Показати тільки Книги або Файли" << endl;
+    SetColor(YELLOW); cout << "8."; SetColor(WHITE); cout << " [Р Р•Р”РђР“РЈР’РђРќРќРЇ] Р—РјС–РЅРёС‚Рё РґР°РЅС– СЃС‚СѓРґРµРЅС‚Р°" << endl;
+    SetColor(YELLOW); cout << "9."; SetColor(WHITE); cout << " [Р Р•Р”РђР“РЈР’РђРќРќРЇ] Р—РјС–РЅРёС‚Рё РґР°РЅС– РґРѕРєСѓРјРµРЅС‚Р°" << endl;
+    SetColor(YELLOW); cout << "10."; SetColor(WHITE); cout << " [РЎРћР РўРЈР’РђРќРќРЇ] РЎРѕСЂС‚СѓРІР°С‚Рё РґРѕРєСѓРјРµРЅС‚Рё Р·Р° РЅР°Р·РІРѕСЋ" << endl;
+    SetColor(YELLOW); cout << "11."; SetColor(WHITE); cout << " [Р¤Р†Р›Р¬РўР ] РџРѕРєР°Р·Р°С‚Рё С‚С–Р»СЊРєРё РљРЅРёРіРё Р°Р±Рѕ Р¤Р°Р№Р»Рё" << endl;
 
     SetColor(DARKGRAY); cout << "----------------------------------------" << endl;
-    SetColor(YELLOW); cout << "12."; SetColor(WHITE); cout << " Список усіх студентів" << endl;
-    SetColor(YELLOW); cout << "13."; SetColor(WHITE); cout << " Список усіх документів" << endl;
+    SetColor(YELLOW); cout << "12."; SetColor(WHITE); cout << " РЎРїРёСЃРѕРє СѓСЃС–С… СЃС‚СѓРґРµРЅС‚С–РІ" << endl;
+    SetColor(YELLOW); cout << "13."; SetColor(WHITE); cout << " РЎРїРёСЃРѕРє СѓСЃС–С… РґРѕРєСѓРјРµРЅС‚С–РІ" << endl;
 
     SetColor(LIGHTGREEN);
-    cout << "14. Допомога (Інструкція)" << endl;
+    cout << "14. Р”РѕРїРѕРјРѕРіР° (Р†РЅСЃС‚СЂСѓРєС†С–СЏ)" << endl;
     SetColor(WHITE);
 
     if (isAdmin) {
         SetColor(LIGHTRED);
         cout << "----------------------------------------" << endl;
-        cout << "--- ПАНЕЛЬ АДМІНІСТРАТОРА ---" << endl;
-        SetColor(YELLOW); cout << "15."; SetColor(WHITE); cout << " Зареєструвати нового користувача" << endl;
-        SetColor(YELLOW); cout << "16."; SetColor(WHITE); cout << " Видалити користувача" << endl;
-        SetColor(YELLOW); cout << "17."; SetColor(WHITE); cout << " Список користувачів системи" << endl;
+        cout << "--- РџРђРќР•Р›Р¬ РђР”РњР†РќР†РЎРўР РђРўРћР Рђ ---" << endl;
+        SetColor(YELLOW); cout << "15."; SetColor(WHITE); cout << " Р—Р°СЂРµС”СЃС‚СЂСѓРІР°С‚Рё РЅРѕРІРѕРіРѕ РєРѕСЂРёСЃС‚СѓРІР°С‡Р°" << endl;
+        SetColor(YELLOW); cout << "16."; SetColor(WHITE); cout << " Р’РёРґР°Р»РёС‚Рё РєРѕСЂРёСЃС‚СѓРІР°С‡Р°" << endl;
+        SetColor(YELLOW); cout << "17."; SetColor(WHITE); cout << " РЎРїРёСЃРѕРє РєРѕСЂРёСЃС‚СѓРІР°С‡С–РІ СЃРёСЃС‚РµРјРё" << endl;
     }
 
     SetColor(DARKGRAY);
     cout << "----------------------------------------" << endl;
-    SetColor(YELLOW); cout << "0."; SetColor(WHITE); cout << " Вихід" << endl;
+    SetColor(YELLOW); cout << "0."; SetColor(WHITE); cout << " Р’РёС…С–Рґ" << endl;
     SetColor(LIGHTCYAN);
     cout << "========================================" << endl;
     SetColor(WHITE);
@@ -227,30 +99,30 @@ void ShowHelp() {
     system("cls");
     SetColor(LIGHTGREEN);
     cout << "\n============================================================" << endl;
-    cout << "                    ІНСТРУКЦІЯ КОРИСТУВАЧА                    " << endl;
+    cout << "                    Р†РќРЎРўР РЈРљР¦Р†РЇ РљРћР РРЎРўРЈР’РђР§Рђ                    " << endl;
     cout << "============================================================" << endl;
     SetColor(WHITE);
 
-    cout << "\n[1. ЗАГАЛЬНИЙ ОПИС]" << endl;
-    cout << "Ця система призначена для автоматизації роботи бібліотекаря." << endl;
+    cout << "\n[1. Р—РђР“РђР›Р¬РќРР™ РћРџРРЎ]" << endl;
+    cout << "Р¦СЏ СЃРёСЃС‚РµРјР° РїСЂРёР·РЅР°С‡РµРЅР° РґР»СЏ Р°РІС‚РѕРјР°С‚РёР·Р°С†С–С— СЂРѕР±РѕС‚Рё Р±С–Р±Р»С–РѕС‚РµРєР°СЂСЏ." << endl;
 
-    cout << "\n[2. ПРАВИЛА ВВОДУ]" << endl;
-    SetColor(YELLOW); cout << " - Текстові поля:"; SetColor(WHITE); cout << " Можна вводити з пробілами." << endl;
-    SetColor(YELLOW); cout << " - ID:"; SetColor(WHITE); cout << " Мають бути унікальними." << endl;
+    cout << "\n[2. РџР РђР’РР›Рђ Р’Р’РћР”РЈ]" << endl;
+    SetColor(YELLOW); cout << " - РўРµРєСЃС‚РѕРІС– РїРѕР»СЏ:"; SetColor(WHITE); cout << " РњРѕР¶РЅР° РІРІРѕРґРёС‚Рё Р· РїСЂРѕР±С–Р»Р°РјРё." << endl;
+    SetColor(YELLOW); cout << " - ID:"; SetColor(WHITE); cout << " РњР°СЋС‚СЊ Р±СѓС‚Рё СѓРЅС–РєР°Р»СЊРЅРёРјРё." << endl;
 
-    cout << "\n[3. ОПИС КОМАНД]" << endl;
-    cout << " * Видача: Книга закріплюється за студентом на 14 днів." << endl;
-    cout << " * Боржники: Показує список прострочених книг." << endl;
+    cout << "\n[3. РћРџРРЎ РљРћРњРђРќР”]" << endl;
+    cout << " * Р’РёРґР°С‡Р°: РљРЅРёРіР° Р·Р°РєСЂС–РїР»СЋС”С‚СЊСЃСЏ Р·Р° СЃС‚СѓРґРµРЅС‚РѕРј РЅР° 14 РґРЅС–РІ." << endl;
+    cout << " * Р‘РѕСЂР¶РЅРёРєРё: РџРѕРєР°Р·СѓС” СЃРїРёСЃРѕРє РїСЂРѕСЃС‚СЂРѕС‡РµРЅРёС… РєРЅРёРі." << endl;
 
     if (true) {
         SetColor(LIGHTRED);
-        cout << "\n[4. АДМІНІСТРАТОР]" << endl;
-        cout << " Логін: admin | Пароль: admin123" << endl;
+        cout << "\n[4. РђР”РњР†РќР†РЎРўР РђРўРћР ]" << endl;
+        cout << " Р›РѕРіС–РЅ: admin | РџР°СЂРѕР»СЊ: admin123" << endl;
     }
     SetColor(LIGHTGREEN); cout << "============================================================" << endl; SetColor(WHITE);
 
-    cout << "\nНатисніть Enter, щоб повернутися...";
-    cin.get(); // Чекаємо натискання
+    cout << "\nРќР°С‚РёСЃРЅС–С‚СЊ Enter, С‰РѕР± РїРѕРІРµСЂРЅСѓС‚РёСЃСЏ...";
+    cin.get(); // Р§РµРєР°С”РјРѕ РЅР°С‚РёСЃРєР°РЅРЅСЏ
 }
 
 int main() {
@@ -261,16 +133,16 @@ int main() {
     string username, password;
     bool loggedIn = false;
 
-    // --- АВТОРИЗАЦІЯ ---
+    // --- РђР’РўРћР РР—РђР¦Р†РЇ ---
     while (!loggedIn) {
         system("cls");
-        SetColor(YELLOW); cout << "\n>>> ВХІД У СИСТЕМУ <<<" << endl;
+        SetColor(YELLOW); cout << "\n>>> Р’РҐР†Р” РЈ РЎРРЎРўР•РњРЈ <<<" << endl;
         SetColor(DARKGRAY); cout << "(Default: admin / admin123)" << endl;
         SetColor(WHITE);
 
-        // Логін і пароль — будь-які символи (ANY)
-        if (!ReadString(" Логін", username, ANY)) continue;
-        if (!ReadString(" Пароль", password, ANY, true)) continue;
+        // Р›РѕРіС–РЅ С– РїР°СЂРѕР»СЊ вЂ” Р±СѓРґСЊ-СЏРєС– СЃРёРјРІРѕР»Рё (ANY)
+        if (!ReadString(" Р›РѕРіС–РЅ", username, ANY)) continue;
+        if (!ReadString(" РџР°СЂРѕР»СЊ", password, ANY, true)) continue;
 
         if (app.Login(username, password)) {
             loggedIn = true;
@@ -282,12 +154,12 @@ int main() {
             SetColor(WHITE);
 
             string choice;
-            if (!ReadString(" Спробувати ще раз? (y/n)", choice, ANY)) continue;
+            if (!ReadString(" РЎРїСЂРѕР±СѓРІР°С‚Рё С‰Рµ СЂР°Р·? (y/n)", choice, ANY)) continue;
             if (choice == "n" || choice == "N") return 0;
         }
     }
 
-    // --- ГОЛОВНИЙ ЦИКЛ ---
+    // --- Р“РћР›РћР’РќРР™ Р¦РРљР› ---
     while (true) {
         bool isAdmin = false;
         if (app.GetCurrentUser())
@@ -296,7 +168,7 @@ int main() {
         ShowMenu(isAdmin);
 
         int choice;
-        if (!ReadValue(" Ваш вибір", choice, DIGITS_ONLY))
+        if (!ReadValue(" Р’Р°С€ РІРёР±С–СЂ", choice, DIGITS_ONLY))
             continue;
 
         system("cls");
@@ -308,13 +180,13 @@ int main() {
             SetColor(GREEN); cout << MSG_BYE << endl;
             return 0;
 
-        case 1: { // Пошук
+        case 1: { // РџРѕС€СѓРє
             string query;
-            if (!ReadString(" Введіть частину назви або автора", query, ANY)) break;
+            if (!ReadString(" Р’РІРµРґС–С‚СЊ С‡Р°СЃС‚РёРЅСѓ РЅР°Р·РІРё Р°Р±Рѕ Р°РІС‚РѕСЂР°", query, ANY)) break;
             auto results = app.SearchDocuments(query);
 
             SetColor(CYAN);
-            cout << "\n Знайдено документів: " << results.size() << endl;
+            cout << "\n Р—РЅР°Р№РґРµРЅРѕ РґРѕРєСѓРјРµРЅС‚С–РІ: " << results.size() << endl;
             SetColor(WHITE);
 
             for (auto* doc : results)
@@ -323,34 +195,34 @@ int main() {
             break;
         }
 
-        case 2: { // Видача
+        case 2: { // Р’РёРґР°С‡Р°
             string cId;
             int dId;
 
-            if (!ReadString(" ID картки студента", cId, DIGITS_ONLY)) break;
-            if (!ReadValue(" ID документа", dId, DIGITS_ONLY)) break;
+            if (!ReadString(" ID РєР°СЂС‚РєРё СЃС‚СѓРґРµРЅС‚Р°", cId, DIGITS_ONLY)) break;
+            if (!ReadValue(" ID РґРѕРєСѓРјРµРЅС‚Р°", dId, DIGITS_ONLY)) break;
 
             if (app.CheckoutBook(cId, dId)) {
-                SetColor(GREEN); cout << " Успіх!\n";
+                SetColor(GREEN); cout << " РЈСЃРїС–С…!\n";
             }
             else {
-                SetColor(RED); cout << " Помилка видачі.\n";
+                SetColor(RED); cout << " РџРѕРјРёР»РєР° РІРёРґР°С‡С–.\n";
             }
             break;
         }
 
-        case 3: { // Повернення
+        case 3: { // РџРѕРІРµСЂРЅРµРЅРЅСЏ
             string cId;
             int dId;
 
-            if (!ReadString(" ID картки студента", cId, DIGITS_ONLY)) break;
-            if (!ReadValue(" ID документа", dId, DIGITS_ONLY)) break;
+            if (!ReadString(" ID РєР°СЂС‚РєРё СЃС‚СѓРґРµРЅС‚Р°", cId, DIGITS_ONLY)) break;
+            if (!ReadValue(" ID РґРѕРєСѓРјРµРЅС‚Р°", dId, DIGITS_ONLY)) break;
 
             if (app.ReturnBook(cId, dId)) {
-                SetColor(GREEN); cout << " Успіх!\n";
+                SetColor(GREEN); cout << " РЈСЃРїС–С…!\n";
             }
             else {
-                SetColor(RED); cout << " Помилка повернення.\n";
+                SetColor(RED); cout << " РџРѕРјРёР»РєР° РїРѕРІРµСЂРЅРµРЅРЅСЏ.\n";
             }
             break;
         }
@@ -359,40 +231,40 @@ int main() {
             app.DisplayDebtorList();
             break;
 
-        case 5: { // Додавання студента
-            cout << "--- НОВИЙ СТУДЕНТ ---" << endl;
+        case 5: { // Р”РѕРґР°РІР°РЅРЅСЏ СЃС‚СѓРґРµРЅС‚Р°
+            cout << "--- РќРћР’РР™ РЎРўРЈР”Р•РќРў ---" << endl;
 
             string l, f, r, g, cId;
             int c;
 
-            if (!ReadString(" Прізвище", l, TEXT_ONLY)) break;
-            if (!ReadString(" Ім'я", f, TEXT_ONLY)) break;
-            if (!ReadString(" Залікова", r, ANY)) break;
-            if (!ReadValue(" Курс (1-6)", c, DIGITS_ONLY)) break;
-            if (!ReadString(" Група", g, ANY)) break;
-            if (!ReadString(" Читацький ID", cId, ANY)) break;
+            if (!ReadString(" РџСЂС–Р·РІРёС‰Рµ", l, TEXT_ONLY)) break;
+            if (!ReadString(" Р†Рј'СЏ", f, TEXT_ONLY)) break;
+            if (!ReadString(" Р—Р°Р»С–РєРѕРІР°", r, ANY)) break;
+            if (!ReadValue(" РљСѓСЂСЃ (1-6)", c, DIGITS_ONLY)) break;
+            if (!ReadString(" Р“СЂСѓРїР°", g, ANY)) break;
+            if (!ReadString(" Р§РёС‚Р°С†СЊРєРёР№ ID", cId, ANY)) break;
 
             app.AddStudent(Student(l, f, r, c, g, cId));
             break;
         }
 
-        case 6: { // Додавання документа
+        case 6: { // Р”РѕРґР°РІР°РЅРЅСЏ РґРѕРєСѓРјРµРЅС‚Р°
             int type;
-            if (!ReadValue(" Тип? (1-Книга, 2-Файл)", type, DIGITS_ONLY)) break;
+            if (!ReadValue(" РўРёРї? (1-РљРЅРёРіР°, 2-Р¤Р°Р№Р»)", type, DIGITS_ONLY)) break;
 
             string t, a;
             int y;
 
-            if (!ReadString(" Назва", t, ANY)) break;
-            if (!ReadString(" Автор", a, TEXT_ONLY)) break;
-            if (!ReadValue(" Рік (1000-2030)", y, DIGITS_ONLY)) break;
+            if (!ReadString(" РќР°Р·РІР°", t, ANY)) break;
+            if (!ReadString(" РђРІС‚РѕСЂ", a, TEXT_ONLY)) break;
+            if (!ReadValue(" Р С–Рє (1000-2030)", y, DIGITS_ONLY)) break;
 
             if (type == 1) {
                 int p;
                 string m;
 
-                if (!ReadValue(" Сторінок", p, DIGITS_ONLY)) break;
-                if (!ReadString(" Палітурка", m, ANY)) break;
+                if (!ReadValue(" РЎС‚РѕСЂС–РЅРѕРє", p, DIGITS_ONLY)) break;
+                if (!ReadString(" РџР°Р»С–С‚СѓСЂРєР°", m, ANY)) break;
 
                 app.AddDocument(make_unique<PrintedDocument>(0, t, a, y, p, m));
             }
@@ -400,8 +272,8 @@ int main() {
                 string f;
                 double s;
 
-                if (!ReadString(" Формат (PDF/EPUB)", f, ANY)) break;
-                if (!ReadValue(" Розмір (MB)", s, DOUBLE_ONLY)) break;
+                if (!ReadString(" Р¤РѕСЂРјР°С‚ (PDF/EPUB)", f, ANY)) break;
+                if (!ReadValue(" Р РѕР·РјС–СЂ (MB)", s, DOUBLE_ONLY)) break;
 
                 app.AddDocument(make_unique<ElectronicDocument>(0, t, a, y, f, s));
             }
@@ -411,42 +283,42 @@ int main() {
 
         case 7: {
             int id;
-            if (!ReadValue(" ID для видалення", id, DIGITS_ONLY)) break;
+            if (!ReadValue(" ID РґР»СЏ РІРёРґР°Р»РµРЅРЅСЏ", id, DIGITS_ONLY)) break;
             app.DeleteDocument(id);
             break;
         }
 
-        case 8: { // Редагування студента
+        case 8: { // Р РµРґР°РіСѓРІР°РЅРЅСЏ СЃС‚СѓРґРµРЅС‚Р°
             string id;
-            if (!ReadString(" Введіть ID картки студента", id, ANY)) break;
+            if (!ReadString(" Р’РІРµРґС–С‚СЊ ID РєР°СЂС‚РєРё СЃС‚СѓРґРµРЅС‚Р°", id, ANY)) break;
 
-            cout << "--- Введіть нові дані ---" << endl;
+            cout << "--- Р’РІРµРґС–С‚СЊ РЅРѕРІС– РґР°РЅС– ---" << endl;
 
             string l, f, r, g;
             int c;
 
-            if (!ReadString(" Прізвище", l, TEXT_ONLY)) break;
-            if (!ReadString(" Ім'я", f, TEXT_ONLY)) break;
-            if (!ReadString(" Залікова", r, ANY)) break;
-            if (!ReadValue(" Курс (1-6)", c, DIGITS_ONLY)) break;
-            if (!ReadString(" Група", g, ANY)) break;
+            if (!ReadString(" РџСЂС–Р·РІРёС‰Рµ", l, TEXT_ONLY)) break;
+            if (!ReadString(" Р†Рј'СЏ", f, TEXT_ONLY)) break;
+            if (!ReadString(" Р—Р°Р»С–РєРѕРІР°", r, ANY)) break;
+            if (!ReadValue(" РљСѓСЂСЃ (1-6)", c, DIGITS_ONLY)) break;
+            if (!ReadString(" Р“СЂСѓРїР°", g, ANY)) break;
 
             app.EditStudent(id, Student(l, f, r, c, g, id));
             break;
         }
 
-        case 9: { // Редагування документа
+        case 9: { // Р РµРґР°РіСѓРІР°РЅРЅСЏ РґРѕРєСѓРјРµРЅС‚Р°
             int id;
-            if (!ReadValue(" Введіть ID документа", id, DIGITS_ONLY)) break;
+            if (!ReadValue(" Р’РІРµРґС–С‚СЊ ID РґРѕРєСѓРјРµРЅС‚Р°", id, DIGITS_ONLY)) break;
 
-            cout << "--- Введіть нові дані ---" << endl;
+            cout << "--- Р’РІРµРґС–С‚СЊ РЅРѕРІС– РґР°РЅС– ---" << endl;
 
             string t, a;
             int y;
 
-            if (!ReadString(" Назва", t, ANY)) break;
-            if (!ReadString(" Автор", a, TEXT_ONLY)) break;
-            if (!ReadValue(" Рік", y, DIGITS_ONLY)) break;
+            if (!ReadString(" РќР°Р·РІР°", t, ANY)) break;
+            if (!ReadString(" РђРІС‚РѕСЂ", a, TEXT_ONLY)) break;
+            if (!ReadValue(" Р С–Рє", y, DIGITS_ONLY)) break;
 
             PrintedDocument tmp(id, t, a, y, 0, "");
             app.EditDocument(id, tmp);
@@ -460,7 +332,7 @@ int main() {
 
         case 11: {
             int t;
-            if (!ReadValue(" Показати (1-Книги, 2-Файли)", t, DIGITS_ONLY)) break;
+            if (!ReadValue(" РџРѕРєР°Р·Р°С‚Рё (1-РљРЅРёРіРё, 2-Р¤Р°Р№Р»Рё)", t, DIGITS_ONLY)) break;
 
             auto v = app.FilterDocumentsByType((t == 1) ? "Printed" : "Electronic");
             for (auto* d : v) d->DisplayInfo();
@@ -485,9 +357,9 @@ int main() {
             string u, p;
             int a;
 
-            if (!ReadString(" Новий Логін", u, ANY)) break;
-            if (!ReadString(" Новий Пароль", p, ANY, true)) break;
-            if (!ReadValue(" Права адміна? (1-Так, 0-Ні)", a, DIGITS_ONLY)) break;
+            if (!ReadString(" РќРѕРІРёР№ Р›РѕРіС–РЅ", u, ANY)) break;
+            if (!ReadString(" РќРѕРІРёР№ РџР°СЂРѕР»СЊ", p, ANY, true)) break;
+            if (!ReadValue(" РџСЂР°РІР° Р°РґРјС–РЅР°? (1-РўР°Рє, 0-РќС–)", a, DIGITS_ONLY)) break;
 
             app.RegisterUser(u, p, (a == 1));
             break;
@@ -497,7 +369,7 @@ int main() {
             if (!isAdmin) break;
 
             string u;
-            if (!ReadString(" Логін для видалення", u, ANY)) break;
+            if (!ReadString(" Р›РѕРіС–РЅ РґР»СЏ РІРёРґР°Р»РµРЅРЅСЏ", u, ANY)) break;
             app.DeleteUser(u);
             break;
         }
@@ -512,7 +384,7 @@ int main() {
         }
 
         SetColor(DARKGRAY);
-        cout << "\n[Натисніть Enter щоб продовжити]";
+        cout << "\n[РќР°С‚РёСЃРЅС–С‚СЊ Enter С‰РѕР± РїСЂРѕРґРѕРІР¶РёС‚Рё]";
         SetColor(WHITE);
 
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
