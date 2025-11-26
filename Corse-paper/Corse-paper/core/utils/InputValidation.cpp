@@ -2,13 +2,14 @@
 #include <iostream>
 #include <string>
 #include <limits>
-#include <algorithm> // Для all_of
-#include <cctype>    // Для isdigit, isalpha
+#include <algorithm>
+#include <cctype>   
 
 using namespace std;
 
 namespace LibraryCore {
 
+    // Реалізація методу вводу рядка
     string InputValidation::GetStringInput(const string& prompt, ValidationMode mode)
     {
         while (true)
@@ -17,13 +18,11 @@ namespace LibraryCore {
             string input;
             getline(cin, input);
 
-            // 1. Перевірка на порожнечу
             if (input.empty()) {
                 cout << "Помилка: Поле не може бути порожнім.\n";
                 continue;
             }
 
-            // 2. Перевірка на тип символів
             bool isValid = true;
 
             if (mode == ValidationMode::TEXT_ONLY) {
@@ -41,7 +40,6 @@ namespace LibraryCore {
                 }
             }
             else if (mode == ValidationMode::DIGITS_ONLY) {
-                // Перевіряємо, чи всі символи є цифрами
                 for (char c : input) {
                     if (!isdigit((unsigned char)c)) {
                         isValid = false;
@@ -58,6 +56,7 @@ namespace LibraryCore {
         }
     }
 
+    // Реалізація методу вводу цілого числа
     int InputValidation::GetIntInput(const string& prompt, int min, int max)
     {
         while (true)
@@ -70,8 +69,8 @@ namespace LibraryCore {
                 size_t pos = 0;
                 int value = stoi(input, &pos);
 
-                if (pos != input.length()) { // Якщо після числа є сміття (напр. "12abc")
-                    throw invalid_argument("Not a number");
+                if (pos != input.length()) { 
+                    throw invalid_argument("Помилка: не число");
                 }
 
                 if (value < min || value > max) {
@@ -86,7 +85,7 @@ namespace LibraryCore {
             }
         }
     }
-
+    // Реалізація методу вводу дробового числа 
     double InputValidation::GetDoubleInput(const string& prompt, double min, double max)
     {
         while (true)

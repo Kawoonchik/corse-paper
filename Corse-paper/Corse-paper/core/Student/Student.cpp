@@ -87,7 +87,7 @@ namespace LibraryCore
         return *this;
     }
 
-    // --- Get/Set ---
+    // Get/Set методи
 
     void Student::SetLastName(const string& val) { lastName = val; }
     string Student::GetLastName() const { return lastName; }
@@ -110,7 +110,7 @@ namespace LibraryCore
     void Student::SetReaderCardId(const string& val) { readerCardId = val; }
     string Student::GetReaderCardId() const { return readerCardId; }
 
-    // --- Методи ---
+    // Власні методи
 
     string Student::GetFullName() const
     {

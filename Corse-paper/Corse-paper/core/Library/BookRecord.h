@@ -9,10 +9,10 @@ namespace LibraryCore
     /// * Зв'язує ID документа з читацьким квитком студента та фіксує дати.
     struct BookRecord
     {
-        int documentId = 0;           ///< ID виданого документа
-        std::string readerCardId;     ///< Номер читацького квитка студента
-        std::time_t issueDate = 0;    ///< Дата видачі
-        std::time_t dueDate = 0;      ///< Дата, до якої треба повернути
+        int documentId = 0;         
+        std::string readerCardId;   
+        std::time_t issueDate = 0;   
+        std::time_t dueDate = 0;     
 
         /// @brief Формує рядок CSV для збереження транзакції.
         std::string ToCsv() const;
