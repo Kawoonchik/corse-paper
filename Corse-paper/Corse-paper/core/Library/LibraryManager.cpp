@@ -56,7 +56,7 @@ LibraryManager::LibraryManager() : currentUser(nullptr)
 LibraryManager::~LibraryManager()
 {
     SaveAllData();
-    cout << " Менеджера знищено: "  << endl;
+   // cout << " Менеджера знищено "  << endl;
 
 }
 

@@ -35,7 +35,7 @@ namespace LibraryCore {
                     }
                 }
                 if (!isValid) {
-                    cout << "Помилка: Введіть тільки текст (без цифр).\n";
+                    cout << "Помилка: Введіть тільки текст.\n";
                     continue;
                 }
             }
@@ -99,7 +99,7 @@ namespace LibraryCore {
                 double value = stod(input, &pos);
 
                 if (pos != input.length()) {
-                    throw invalid_argument("Not a number");
+                    throw invalid_argument("Помилка: Не число");
                 }
 
                 if (value < min || value > max) {

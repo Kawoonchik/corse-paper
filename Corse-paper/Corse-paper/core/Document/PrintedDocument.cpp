@@ -23,7 +23,7 @@ namespace LibraryCore
 
     PrintedDocument::~PrintedDocument() 
     {
-        cout << " Документ знищено: " << title << endl;
+       // cout << " Документ знищено: " << title << endl;
     }
 
 	// Копіювання та переміщення

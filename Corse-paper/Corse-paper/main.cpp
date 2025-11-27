@@ -132,11 +132,11 @@ int main() {
     string username, password;
     bool loggedIn = false;
 
-    // --- АВТОРИЗАЦІЯ ---
+    // Авторизація
     while (!loggedIn) {
         system("cls");
         SetColor(YELLOW); cout << "\n>>> ВХІД У СИСТЕМУ <<<" << endl;
-        SetColor(DARKGRAY); cout << "(Default: admin / admin123)" << endl; SetColor(WHITE);
+        SetColor(WHITE);
 
         username = inputVal.GetStringInput(" Логін:", ValidationMode::TEXT_ONLY);
         password = inputVal.GetStringInput(" Пароль:", ValidationMode::ANY);
@@ -214,7 +214,7 @@ int main() {
 
         case 6: { // Додавання документа
             int type = inputVal.GetIntInput(" Тип? (1-Книга, 2-Файл):", 1, 2);
-            string t = inputVal.GetStringInput(" Назва:", ValidationMode::TEXT_ONLY);
+            string t = inputVal.GetStringInput(" Назва:", ValidationMode::ANY);
             string a = inputVal.GetStringInput(" Автор:", ValidationMode::TEXT_ONLY);
             int y = inputVal.GetIntInput(" Рік:", 0, 2100);
 

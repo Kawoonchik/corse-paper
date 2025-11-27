@@ -34,7 +34,7 @@ namespace LibraryCore
 
     Student::~Student()
     {
-        cout << " Студента знищено: " << lastName << endl;
+       // cout << " Студента знищено: " << lastName << endl;
     }
 
     // Методи копіювання і переміщення

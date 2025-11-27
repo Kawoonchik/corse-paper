@@ -26,7 +26,7 @@ namespace LibraryCore
 
     ElectronicDocument::~ElectronicDocument() 
     {
-        cout << " Електронний документ знищено: " << title << endl;
+        // cout << " Електронний документ знищено: " << title << endl;
     }
 
 	// Копіювання і переміщення

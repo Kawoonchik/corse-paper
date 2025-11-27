@@ -21,7 +21,7 @@ namespace LibraryCore
 
     Document::~Document() 
     {
-        cout << " Документ знищено: " << title << endl;
+        // cout << " Документ знищено: " << title << endl;
     }
 
     // Копіювання
